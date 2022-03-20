@@ -5,8 +5,8 @@ in the manuscript 'Illuminating the mammalian genome with multivariate phenotype
 
 ## Installation
 
-To run these scripts, you will need R version 3.6.3 or later, widely available on 
-Unix-like, Windows and Mac families of operating systems. You can install R from [here](https://www.r-project.org/)
+To run these scripts, you will need R version 3.6.3 or later, [available](https://www.r-project.org/) for  
+Unix-like, Windows and Mac families of operating systems.
 
 ### Windows users install Rtools
 If you have R version 4.0.0 or above on Windows, you will also need to install 
@@ -14,19 +14,27 @@ If you have R version 4.0.0 or above on Windows, you will also need to install
 
 ### Clone the repository
 To get started, first [clone](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository)
-this repository onto your local machine in folder "<your_path>/multivariate_phenotype"
+this repository onto your local machine in folder "<your_path>/multivariate_phenotype_data_and_code"
+```
+<your_path># git clone https://github.com/georgenicholson/multivariate_phenotype_data_and_code.git
+```
+### Install renv
 
 Next, open an R console, and install the 
 [renv](https://rstudio.github.io/renv/index.html) R package if you don't have it 
-already (e.g. via `install.packages("renv")`). Then, run the following, 
-changing `path_to_dir` to the path of your local version of this repository to install the required packages for the scripts
+already
 ```
-path_to_dir <- "<your_path>/multivariate_phenotype"
+> install.packages("renv")
+```
+###  Install the required packages
+Run the following, changing `path_to_dir` to the path of your local version of this repository
+```
+path_to_dir <- "<your_path>/multivariate_phenotype_data_and_code"
 setwd(path_to_dir)
 renv::activate(path_to_dir)
 renv::restore(path_to_dir)
 ```
- 
+
 
 ## Data
 
