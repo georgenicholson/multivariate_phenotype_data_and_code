@@ -6,8 +6,10 @@ in the manuscript 'Illuminating the mammalian genome with multivariate phenotype
 ## Installation
 
 To run these scripts, you will need R version 3.6.3 or later, widely available on 
-Unix-like, Windows and Mac families of operating systems. If you have R version 4.0.0
-or above on Windows, you will also need to install 
+Unix-like, Windows and Mac families of operating systems. 
+
+## Windows users install Rtools
+If you have R version 4.0.0 or above on Windows, you will also need to install 
 [Rtools](https://cran.r-project.org/bin/windows/Rtools/). 
 
 To get started, first [clone](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository)
