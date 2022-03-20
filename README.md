@@ -15,8 +15,8 @@ If you have R version 4.0.0 or above on Windows, you will also need to install
 To get started, first [clone](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository)
 this repository onto your local machine in folder "<your_path>/multivariate_phenotype_data_and_code"
 ```
-# cd <your_path>
-<your_path> # git clone https://github.com/georgenicholson/multivariate_phenotype_data_and_code.git
+cd <your_path>
+git clone https://github.com/georgenicholson/multivariate_phenotype_data_and_code.git
 ```
 ### Install renv
 
@@ -24,7 +24,7 @@ Next, open an R console, and install the
 [renv](https://rstudio.github.io/renv/index.html) R package if you don't have it 
 already
 ```
-> install.packages("renv")
+install.packages("renv")
 ```
 ###  Install the required packages
 Run the following, changing <your_path> to get to the path of your local version of this repository
