@@ -26,7 +26,7 @@ already
 > install.packages("renv")
 ```
 ###  Install the required packages
-Run the following, changing `path_to_dir` to the path of your local version of this repository
+Run the following, changing <your_path> to get to the path of your local version of this repository
 ```
 path_to_dir <- "<your_path>/multivariate_phenotype_data_and_code"
 setwd(path_to_dir)
