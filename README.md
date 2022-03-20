@@ -7,7 +7,7 @@ in 'Illuminating the mammalian genome with multivariate phenotype analysis'.
 
 To run these scripts, you will need R version 3.6.3 or later, [available](https://www.r-project.org/) for Unix-like, Windows and Mac families of operating systems.
 
-### Windows users install Rtools
+### Windows users please install Rtools
 If you have R version 4.0.0 or above on Windows, you will also need to install 
 [Rtools](https://cran.r-project.org/bin/windows/Rtools/). 
 
@@ -27,7 +27,7 @@ already
 install.packages("renv")
 ```
 ###  Install the required packages
-Run the following, changing <your_path> to get to the path of your local version of this repository
+Run the following, remembering to place <your_path> in the code below
 ```
 path_to_dir <- "<your_path>/multivariate_phenotype_data_and_code"
 setwd(path_to_dir)
