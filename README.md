@@ -12,7 +12,7 @@ If you have R version 4.0.0 or above on Windows, you will also need to install
 [Rtools](https://cran.r-project.org/bin/windows/Rtools/). 
 
 ### Clone the repository
-To get started, first [clone](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository)
+To get started, choose the local directory where you want the repository (call this <your_path>), and [clone](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository)
 this repository onto your local machine in folder "<your_path>/multivariate_phenotype_data_and_code"
 ```
 cd <your_path>
