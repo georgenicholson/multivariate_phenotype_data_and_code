@@ -1,7 +1,7 @@
 # multivariate_phenotype_data_and_code
 
-This repository contains the R scripts needed to reproduce the results reported 
-in the manuscript 'Illuminating the mammalian genome with multivariate phenotype analysis'. 
+This repository contains the data and R scripts to reproduce the results reported 
+in 'Illuminating the mammalian genome with multivariate phenotype analysis'. 
 
 ## Installation
 
