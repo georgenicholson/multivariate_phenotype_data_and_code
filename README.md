@@ -51,7 +51,18 @@ You can run a demonstration of the software on a smaller data set via
 ```
 source("scripts/01_model_fitting_wrapper.R")
 ```
-
 ## Full analysis
 
+To replicate the full analysis, please change 
+```
+run_type <- "main"
+```
+at the top of "scripts/01_model_fitting_wrapper.R". The total CPU time of the main analysis is of the order of days, but can be parallelized over the 50 cross-validation folds (the subsamseed loop in "scripts/01_model_fitting_wrapper.R" and shown below)
+```
+# Parallelize the scen and subsamseed loops for the "benchmark" analysis
+for (scen in 1:nrow(analysis_table)) {
+  # Parallelize the subsamseed loop for the "main" analysis
+  for (subsamseed in 1:analysis_table$n_subsamples[scen]) {
 
+  }
+}
