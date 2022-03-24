@@ -53,11 +53,11 @@ source("scripts/01_model_fitting_wrapper.R")
 ```
 ## Full analysis
 
-To replicate the full analysis, please change 
+To replicate the full analysis, please re-define run_type at the top of "scripts/01_model_fitting_wrapper.R as follows
 ```
 run_type <- "main"
 ```
-at the top of "scripts/01_model_fitting_wrapper.R". The total CPU time of the main analysis is of the order of days, but can be parallelized over the 50 cross-validation folds (the subsamseed loop in "scripts/01_model_fitting_wrapper.R" and shown below)
+The total CPU time of the main analysis is of the order of days, but can be parallelized over the 50 cross-validation folds (the subsamseed loop in "scripts/01_model_fitting_wrapper.R" and shown below)
 ```
 # Parallelize the scen and subsamseed loops for the "benchmark" analysis
 for (scen in 1:nrow(analysis_table)) {
