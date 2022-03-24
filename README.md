@@ -65,7 +65,7 @@ for (scen in 1:nrow(analysis_table)) {
 
   }
 }
-
+```
 ## Benchmarking analysis
 
 To reproduce the benchmarking analysis, please re-define run_type at the top of "scripts/01_model_fitting_wrapper.R as follows
