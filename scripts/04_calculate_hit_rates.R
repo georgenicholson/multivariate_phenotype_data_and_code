@@ -21,8 +21,6 @@ compl <- readRDS(file = control$file.compl)
 objl <- readRDS(file = control$file.objl)
 resl.comp.fac <- readRDS(file = control$file_raw_factor_results)
 
-str(resl.comp.fac)
-
 resl.err.rates.comb <- c(resl.comp[grepl(Data, names(resl.comp)) | names(resl.comp) == "uv"],
                           list(varimax = resl.comp.fac[[control$mv_meth_nam_use]]))
 split.use <- 1
@@ -31,12 +29,7 @@ resl.err.rates.one.split <- c(list(uv = resl.comp$uv), lapply(compl[grepl(Data, 
 
 ##########################################
 # Get table of analyses
-analysis_table <- create_table_of_analyses(control = control, check_status = T, run_type = "benchmark")
-
-file_list <- get_file_list(control = control, file_core_name = analysis_table[12, "file_core_name"], subsamseed = 1)
-
-mash_results <- readRDS(file = file_list$mash.raw.results.file.namc)
-str(mash_results)
+analysis_table <- create_table_of_analyses(control = control, check_status = T, run_type = "main")
 
 for(err.data.type in c("comb", "single")[1]){
   resl.err.rates <- switch(err.data.type, 

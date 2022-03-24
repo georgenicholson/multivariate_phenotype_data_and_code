@@ -15,8 +15,8 @@ Data_all <- readRDS(control$Data_all_file)
 
 ##########################################
 # Get table of analyses
-# run_type <- c("demo", "main", "benchmark", "test_benchmark")[3]
-analysis_table <- create_table_of_analyses(control = control, check_status = T, run_type = "benchmark")
+# change run_type to "benchmark" if you have finished running the benchmark analyses
+analysis_table <- create_table_of_analyses(control = control, check_status = T, run_type = "main")
 
 resl.comp <- compl <- Sigll <- Ksigl <- pimatl <- Sighatl <- Rl <- omegaseql <- samll <- objl <- list()
 resl.comp$uv <- list(mn = Data_all$impc$Y_raw[Data_all$impc$sam_names, Data_all$impc$meas_names], 
