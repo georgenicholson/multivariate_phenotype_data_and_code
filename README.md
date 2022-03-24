@@ -31,8 +31,10 @@ Run the following, remembering to place <your_path> in the code below
 ```
 path_to_dir <- "<your_path>/multivariate_phenotype_data_and_code"
 setwd(path_to_dir)
-renv::activate(path_to_dir)
-renv::restore(path_to_dir)
+renv::activate()
+install.packages("BiocManager")
+BiocManager::install("AnnotationDbi", force = TRUE)
+renv::restore()
 ```
 
 
