@@ -32,6 +32,7 @@ Run the following, remembering to place <your_path> in the code below
 path_to_dir <- "<your_path>/multivariate_phenotype_data_and_code"
 setwd(path_to_dir)
 renv::activate()
+renv::init(bioconductor = TRUE)
 install.packages("BiocManager")
 BiocManager::install("AnnotationDbi", force = TRUE)
 renv::restore()
@@ -62,7 +63,7 @@ The total CPU time of the main analysis is of the order of days, but can be para
 for (scen in 1:nrow(analysis_table)) {
   # Parallelize the subsamseed (folds) loop for the "main" analysis
   for (subsamseed in 1:analysis_table$n_subsamples[scen]) {
-
+    < Loop content omitted, full code in "scripts/01_model_fitting_wrapper.R" >
   }
 }
 ```
@@ -72,12 +73,12 @@ To reproduce the benchmarking analysis, please re-define run_type at the top of 
 ```
 run_type <- "benchmark"
 ```
-The total CPU time of the benchmarking analysis is of the order of months, but can be parallelized over the models and cross-validation folds:
+The total CPU time of the benchmarking analysis is of the order of months, but can be parallelized over the models and cross-validation folds at this point in "scripts/01_model_fitting_wrapper.R":
 ```
 # Parallelize the scen (models) and subsamseed (folds) loops for the "benchmark" analysis
 for (scen in 1:nrow(analysis_table)) {
   for (subsamseed in 1:analysis_table$n_subsamples[scen]) {
-
+    < Loop content omitted, full code in "scripts/01_model_fitting_wrapper.R" >
   }
 }
 ```
