@@ -46,7 +46,7 @@ Accompanying data are provided in "data/Data_all.RDS" which can be loaded in R v
 Data_all <- readRDS("data/Data_all.RDS")
 ```
 
-## Generate Figures from paper
+## Generate figures from paper
 
 To generate the Figures and Tables in the paper please download the analysis outputs (output.zip) from our [Zenodo submission](https://doi.org/10.5281/zenodo.6644193). Unzip "output.zip" directly in the root of the repository folder, creating a folder structure "output/global_results/" in which the precomputed output files are. Check the files are there:
 ```
