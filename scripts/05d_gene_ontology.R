@@ -1,19 +1,22 @@
+################################################
+# This script generates Figures 7, S7
+################################################
+
+library("foreach")
 ####################################
-# Control parameters
-sd_mult_big_eff_thresh <- 2
-dirc <- "bo"
-nperm <- 1000
-fwer.th <- .05
-methc <- c("ph", "proc", "fac")[1]
-rerun.GO.analysis <- F
-use.just.homs <- T   # To be want to do the analysis using just homozygotes?
-fac.meth <- c("varimax", "promax")[1]
+# Control parameters for GO
+sd_mult_big_eff_thresh <- 2 # threshold on SD to focus on larger effect sizes
+dirc <- "bo" # directionality of hits up/do/bo for up/down/both
+nperm <- 1000 # number of permutations in GOfuncR::go_enrich()
+fwer.th <- .05 # family-wise error rate threshold in GOfuncR::go_enrich()
+force_run_GO_analysis <- FALSE # force re-run of GO analysis if already performed
+use.just.homs <- T   # Perform the analysis using just homozygotes
+fac.meth <- c("varimax", "promax")[1] # Sparse rotation of loadings when applicable, varimax/promax
+n_cores <- 2 # Number of CPU cores used for GO analysis; increase if available
 
 resimp <- readRDS(file = control$file.resimp)
 resl.comp.fac <- readRDS(file = control$file_raw_factor_results)
 phmap <- Data_all$impc$phmap
-library("foreach")
-
 ph.use <- Data_all$impc$phord
 if(use.just.homs){
   true.use <- unique(resimp[resimp$line.type == "trueMut" & resimp$zyg == 1, "geno"])
@@ -62,21 +65,17 @@ sigl$f$up <- resl.out[[fac.meth]]$signsig.bigeff[true.use, facnam] == 1
 sigl$f$do <- resl.out[[fac.meth]]$signsig.bigeff[true.use, facnam] == -1
 sigl$f$bo <- resl.out[[fac.meth]]$signsig.bigeff[true.use, facnam] != 0
 
-colSums(sigl$f$bo)
-colSums(sigl$mv.bigeff$bo)
-
-
 gene.all.num <- unique(sapply(strsplit(true.use, spl = "_"), function(v) v[1]))
 genemap.in <- Data_all$impc$genemap[Data_all$impc$genemap$genotype_id %in% gene.all.num, ]
 sym2eg <- BiocGenerics::toTable(org.Mm.eg.db::org.Mm.egSYMBOL2EG)
 sym2eg <- sym2eg[order(as.integer(sym2eg$gene_id)), ]
 
-#Note taking the first Entrez ID in case of one-to-many sym2eg mapping 
+# Note taking the first Entrez ID in case of one-to-many sym2eg mapping 
 genemap.in$entrez <- sym2eg[match(genemap.in$gene_symbol, sym2eg$symbol), "gene_id"]
 
 ############################################
 # Note that there are currently some Symbols not being mapped to Entrez IDs
-#Could not match symbol in map to Entrez for these
+# Could not match symbol in map to Entrez for these
 genemap.in[is.na(genemap.in$entrez), ]
 genemap2 <- genemap.in[!is.na(genemap.in$entrez), ]
 egGenomicLoc <- BiocGenerics::toTable(org.Mm.eg.db::org.Mm.egCHRLOC)
@@ -120,12 +119,15 @@ for(restype in c("uv", "mv", "mv.bigeff", "uv.bigeff", "f")[1:5]){#restype <- "u
 #############################################
 # Gene enrichment analysis
 go_file_use <- gsub("go", paste0("go_sdmult_th_", sd_mult_big_eff_thresh), control$file.go.results)
-if (rerun.GO.analysis | !file.exists(go_file_use)) {
-  cl <- parallel::makeCluster(20)
+if (force_run_GO_analysis | !file.exists(go_file_use)) {
+  cl <- parallel::makeCluster(n_cores)
   doParallel::registerDoParallel(cl = cl)
   featvc <- c(ph.use, facnam)
   parallel::clusterCall(cl, function(x) .libPaths(x), .libPaths())
-  outl <- foreach(phc = featvc, .verbose = T, .errorhandling = "pass", .packages = c("GOfuncR", "Mus.musculus")) %dopar% {
+  outl <- foreach(phc = featvc, 
+                  .verbose = T, 
+                  .errorhandling = "pass", 
+                  .packages = c("GOfuncR", "Mus.musculus")) %dopar% {
    tryer <- try({
       allresl <- list()
       if (phc %in% c(ph.use, Data_all$impc$procord)) {
@@ -181,7 +183,7 @@ if (rerun.GO.analysis | !file.exists(go_file_use)) {
   outl.sub <- outl
   save(go.gene.dat, outl.sub, outl, file = go_file_use)
 } else {
-  load(file = go_file_use)
+  load(file = go_file_use) # Contains objects go.gene.dat, outl.sub, outl 
 }
 
 
@@ -195,21 +197,12 @@ co_enrich <- list(list(impc = "Locomotor activity", go = "locomotory behavior"),
 control$dropbox_small_table_dir <- file.path(control$dropbox_table_dir, "little_go_tables")
 dir.create(control$dropbox_small_table_dir, showWarnings = FALSE)
 
-# go_inlab <- "GO in"
-# go_outlab <- "GO out"
-# impc_inlab <- "IMPC in"
-# impc_outlab <- "IMPC out"
-# go_inlab <- "In gene set"
-# go_outlab <- "Not in"
-# impc_inlab <- "In"
-# impc_outlab <- "Not in"
-# inoutvec <- c("In", "Out")
 inoutvec <- c("Yes", "No")
 go_inlab <- inoutvec[1]
 go_outlab <- inoutvec[2]
 impc_inlab <- inoutvec[1]
 impc_outlab <- inoutvec[2]
-for (pair_num in 1:length(co_enrich)) {#pair_num <- 2
+for (pair_num in 1:length(co_enrich)) {
   impc_ph_name_curr <- co_enrich[[pair_num]]$impc
   impc_ph_code_curr <- phmap[match(impc_ph_name_curr, phmap$nam), "ph"]
   go_term_name_curr <- co_enrich[[pair_num]]$go
@@ -220,7 +213,6 @@ for (pair_num in 1:length(co_enrich)) {#pair_num <- 2
   impc_ph_measured_mv <- genfacl$mv.bigeff$bo[[impc_ph_code_curr]]$measured
   impc_ph_measured_uv <- genfacl$uv.bigeff$bo[[impc_ph_code_curr]]$measured
   go_term_tab <- go.gene.dat[go.gene.dat$go_name == go_term_name_curr, ]
-  # go_term_measured <- intersect(impc_ph_measured, go_term_tab$entrez)
   go_enrich_df_mv <- data.frame(all_measured = impc_ph_measured_mv, 
                                 impc_hit = ifelse(impc_ph_measured_mv %in% impc_ph_mv_hits, 2, 1),
                                 go_hit = ifelse(impc_ph_measured_mv %in% go_term_tab$entrez, 2, 1))
@@ -231,7 +223,6 @@ for (pair_num in 1:length(co_enrich)) {#pair_num <- 2
   tab_mv <- table(go_enrich_df_mv$go_hit, go_enrich_df_mv$impc_hit)
   tab_uv <- table(go_enrich_df_uv$go_hit, go_enrich_df_uv$impc_hit)
   dimnames(tab_mv) <- dimnames(tab_uv) <- list(c(go_outlab, go_inlab), c(impc_outlab, impc_inlab))
-  print(co_enrich[[pair_num]])
   pval_uv <- fisher.test(tab_uv)$p.value
   pval_mv <- fisher.test(tab_mv)$p.value
   write.table(formatC(pval_uv, digits = 2, format = "g"), file = paste0(control$dropbox_small_table_dir, "/uv_pval_", pair_num, ".txt"), 
@@ -239,31 +230,30 @@ for (pair_num in 1:length(co_enrich)) {#pair_num <- 2
   write.table(formatC(pval_mv, digits = 2, format = "g"), file = paste0(control$dropbox_small_table_dir, "/mv_pval_", pair_num, ".txt"), 
               col.names = F, row.names = F, quote = F)
   
-  print(tab_mv)
-  print(tab_uv)
-  print(pval_mv)
-  print(pval_uv)
   other_tab <- outl.sub[[impc_ph_name_curr]]$mv.bigeff
-  print(other_tab[other_tab$node_name == go_term_name_curr, ])
-  tabout_mv <- xtable::print.xtable(xtable::xtable(tab_mv, caption = "(b)     MV analysis"), floating = FALSE, caption.placement = 'top') 
+  tabout_mv <- xtable::print.xtable(xtable::xtable(tab_mv, caption = "(b)     MV analysis"), 
+                                    floating = FALSE, 
+                                    caption.placement = 'top', 
+                                    print.results = FALSE) 
   cat(tabout_mv, file = paste0(control$dropbox_small_table_dir, "/go_tab_mv_", pair_num, ".txt"))
-  print(other_tab[other_tab$node_name == go_term_name_curr, ])
-  tabout_uv <- xtable::print.xtable(xtable::xtable(tab_uv, caption = "(a)     UV analysis"), floating = FALSE, caption.placement = 'top') 
+  tabout_uv <- xtable::print.xtable(xtable::xtable(tab_uv, caption = "(a)     UV analysis"), 
+                                    floating = FALSE, 
+                                    caption.placement = 'top', 
+                                    print.results = FALSE) 
   cat(tabout_uv, file = paste0(control$dropbox_small_table_dir, "/go_tab_uv_", pair_num, ".txt"))
-  # cat(tabout, file = paste0(control$dropbox_small_table_dir, "/go_tab_", impc_ph_code_curr, "_", gsub(":", "_", go_term_code_curr), ".txt"))
   impc_ph_name_curr_out <- gsub("%", "\\\\%", impc_ph_name_curr)
   write.table(impc_ph_name_curr_out, file = paste0(control$dropbox_small_table_dir, "/impc_ph_name_", pair_num, ".txt"), 
               col.names = F, row.names = F, quote = F)
   write.table(go_term_name_curr, file = paste0(control$dropbox_small_table_dir, "/go_term_name_", pair_num, ".txt"), 
               col.names = F, row.names = F, quote = F)
   
-}#
+}
 
 gonamv <- unlist(lapply(outl, function(x) c(x$uv$node_name, x$mv$node_name, x$mv.bigeff$node_name, x$uv.bigeff$node_name)))
 goidv <- unlist(lapply(outl, function(x) c(x$uv$node_id, x$mv$node_id, x$mv.bigeff$node_id, x$uv.bigeff$node_id)))
 gonamidmap <- unique(data.frame(nam = gonamv, id = goidv))
-go.gene.dat <- GOfuncR::get_anno_genes(go_ids = goidv, database = 'Mus.musculus', genes = NULL, annotations = NULL,
-                                       term_df = NULL, graph_path_df = NULL, godir = NULL)
+# go.gene.dat <- GOfuncR::get_anno_genes(go_ids = goidv, database = 'Mus.musculus', genes = NULL, annotations = NULL,
+#                                        term_df = NULL, graph_path_df = NULL, godir = NULL)
 go.gene.dat$entrez <- sym2eg[match(go.gene.dat$gene, sym2eg$symbol), "gene_id"]
 go.gene.dat$go_name <- gonamidmap[match(go.gene.dat$go_id, gonamidmap$id), "nam"]
 
@@ -325,8 +315,8 @@ for(numc in save.prop)
 
 ##########################################
 # Heatmap of GO terms for each phenotype perturbing gene set
-ngo.plth <- 3#5
-nph.plth <- 3#3
+ngo.plth <- 3
+nph.plth <- 3
 save.num <- c("ngo.plth", "nph.plth")
 for(numc in save.num){
   write.table(prettyNum(eval(as.name(numc)), big.mark = ","), file = paste(control$dropbox_text_numbers_dir, "/", numc, ".txt", sep = ""), 
@@ -337,7 +327,6 @@ clustlinkage <- c("ward.D", "ward.D2", "single", "complete", "average")[1]
 dist_method <- c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski")[3]
 mvmat.pl <- mvmat
 uvmat.pl <- uvmat
-# mvmat.pl <- mvmat.pl[rowSums(!is.na(mvmat.pl)) >= ngo.plth, ] 
 for(j in 1:10){
   mvmat.pl <- mvmat.pl[rowSums(!is.na(mvmat.pl)) >= ngo.plth, ] 
   mvmat.pl <- mvmat.pl[, colSums(!is.na(mvmat.pl)) >= nph.plth] 
@@ -407,7 +396,6 @@ for(j in 1:length(outl.sub))
   allout <- rbind(allout, outl.sub[[j]]$mv.bigeff)
 allout <- allout[order(allout$raw_p_overrep), ]
 allsub <- allout[match(subplot.go.terms, allout$node_name), ]
-str(allout)
 gotab.paper <- allsub[, c("node_name", "ph", "raw_p_overrep")]
 gotab.paper$proc <- phmap[match(gotab.paper$ph, phmap$nam), "procnam"]
 gotab.paper$nup <- mvmat.nup[cbind(gotab.paper$node_name, gotab.paper$ph)]
@@ -425,7 +413,6 @@ for(j in 1:ncol(gotab.paper)){
   if(!is.numeric(mode(gotab.paper[, j])))
     gotab.paper[, j] <- paste0(substr(gotab.paper[, j], 1, nchmax), ifelse(nchar(gotab.paper[, j]) > nchmax, "...", ""))
 }
-gotab.paper
 
 
 ph_unique <- sort(unique(allout$ph))
@@ -452,19 +439,14 @@ for (j in 1:nrow(go_terms_tables)) {
     fields_out_use <- fields_out[fields_out$new != "GO gene set", ]
     tab_curr <- allout[allout$node_name == set_curr, fields_out_use$old]
   }
-  # max_nchar <- 35
-  # tab_curr[, 1] <- paste0(substr(tab_curr[, 1], 1, max_nchar), ifelse(nchar(tab_curr[, 1]) > max_nchar, "...", ""))
-  # tab_curr
   name_out <- paste0("(", letters[j], ") ", toupper(go_terms_tables$impcgo[j]), " gene set \\emph{", set_curr, "}")
   name_out_short <- set_curr
   tab_curr$raw_p_overrep <- formatC(tab_curr$raw_p_overrep, digits = 2, format = "g")
   names(tab_curr) <- fields_out_use$new
-  # tab_curr[, 1] <- paste0("\\textit{", tab_curr[, 1], "}")
   tabout <- xtable::print.xtable(xtable::xtable(tab_curr, caption = "", align = c("l", "p{5cm}", "r")), floating = FALSE, 
-                                 caption.placement = 'top', include.rownames = FALSE) 
+                                 caption.placement = 'top', include.rownames = FALSE, 
+                                 print.results = FALSE) 
   cat(tabout, file = paste0(control$dropbox_small_table_dir, "/go_impc_enrich_", j, ".txt"))
-  
-  # name_out <- set_curr
   write.table(name_out, file = paste0(control$dropbox_small_table_dir, "/go_impc_enrich_name_", j, ".txt"), 
               col.names = F, row.names = F, quote = F)
   write.table(name_out_short, file = paste0(control$dropbox_small_table_dir, "/go_impc_enrich_name_short_", j, ".txt"), 
@@ -477,14 +459,11 @@ y1 <- resl.out$eb$signsig[, phmap[phmap$nam == "Insulin", "ph"]]
 y2 <- resl.out$eb$signsig[, phmap[phmap$nam == "Fat/Body weight", "ph"]]
 table(y1, y2)
 
-procord
 impc_gene_ids <- sapply(strsplit(names(which(y1 == -1 & y2 == 1)), split = "_"), function(x) x[[1]])
-genemap[match(impc_gene_ids, genemap$genotype_id), ]
-str(genemap)
-impc_gene_ids %in% genemap$genotype_id
-phmap[phmap$nam == "Fat mass", "ph"]
-str(resl.out$eb$signsig)
 
+##############################################
+# Generate Figures 7 and S7
+##############################################
 red_blue_col_palette <- c(rgb(0, 0, 1, alpha = seq(1, 0, len = 500)), rgb(1, 0, 0, alpha = seq(0, 1, len = 500)))
 for(go.plot.type in c("all", "sub")[1]){
   for(mod.type in c("mv", "uv")){
@@ -497,7 +476,6 @@ for(go.plot.type in c("all", "sub")[1]){
     
     wid_eps <- .1
     hei_eps <- .035
-    # layout(mat = matrix(c(1, 1, 2, 3), nrow = 2, ncol = 2), widths = c(1 - wid_eps, wid_eps), c(hei_eps, 1 - hei_eps))
     layout(mat = matrix(c(2, 1), nrow = 2, ncol = 1), heights = c(hei_eps, 1 - hei_eps))
     par(oma = c(12, 13, 3, 3), mar = c(0, 0, 0, 0))
     cexlab <- .6
@@ -505,7 +483,6 @@ for(go.plot.type in c("all", "sub")[1]){
           col = red_blue_col_palette, zlim = c(-1, 1))
     ncut <- 48
     axis(side = 2, labels = NA, at = 1:nrow(zpl), las = 2, cex.axis = cexlab)
-    # axis(side = 3, labels = c("(c)", "(d)"), at = match(go_terms_tables$set[3:4], colnames(zpl)), las = 1, cex.axis = cexlab)
     axis(side = 4, labels = paste0("(", letters[1:n_go_pval_tables], ")"), 
          at = match(go_terms_tables$set, rownames(zpl)), las = 1, cex.axis = .8)
     labcut <- paste0(substr(rownames(zpl), 1, ncut), ifelse(nchar(rownames(zpl)) > ncut, "...", ""))
@@ -548,12 +525,23 @@ for(go.plot.type in c("all", "sub")[1]){
     cexax <- .8
     image(z = (as.matrix(1:1000)), y = 1, x = seq(0, 100, len = 1000), col = red_blue_col_palette, xaxt = "n", yaxt = "n", 
           ylab = "")
-    axis(side = 3, las = 2, cex.axis = cexax, las = 1)#, labels = c("< -1.0", -0.5, 0.0, 0.5, "> 1.0"), at = seq(0, 1, by = .25))
+    axis(side = 3, las = 2, cex.axis = cexax, las = 1)
     mtext(side = 3, text = "% genes with phenotype perturbed upwards", line = 2, cex = cexax)
     
     dev.off()
-    file.copy(from = paste(control$figure_dir, "/", fnamc, sep = ""),
-              to = paste(control$dropbox_figure_dir, "/", fnamc, sep = ""), overwrite = TRUE)
+    if (control$output_to_dropbox) {
+      file.copy(from = paste(control$figure_dir, "/", fnamc, sep = ""),
+                to = paste(control$dropbox_figure_dir, "/", fnamc, sep = ""), overwrite = TRUE)
+    } else {
+      if (fnamc == "mv_all_go_heatmap_th_2.jpg") {
+        file.rename(from = paste(control$figure_dir, "/", fnamc, sep = ""), 
+                    to = file.path(control$figure_dir, "Figure_7.jpg"))
+      }
+      if (fnamc == "uv_all_go_heatmap_th_2.jpg") {
+        file.rename(from = paste(control$figure_dir, "/", fnamc, sep = ""), 
+                    to = file.path(control$figure_dir, "Figure_S7.jpg"))
+      }
+    }
   }
 }
 
@@ -563,7 +551,6 @@ for(go.plot.type in c("all", "sub")[1]){
 uvrows <- sapply(outl, function(x) NROW(x$uv.bigeff))
 mvrows <- sapply(outl, function(x) NROW(x$mv.bigeff))
 tabuvmvcomp <- table(uvrows, mvrows)
-# binl <- list(0, 1, 2, 3:5, 6:10, 11:20, 20:50)
 binl <- list(0, 1:5, 6:10, 11:20, 21:1000)
 binnam <- sapply(binl, function(x) if(length(x) == 1){ x} else {paste(min(x), max(x), sep = "-")})
 nb <- length(binl)
@@ -578,24 +565,24 @@ colnames(tabcomp)[colnames(tabcomp) == "21-1000"] <- ">20"
 tabcomp
 tabcomp[] <- prettyNum(tabcomp, big.mark = ",")
 
-sum(tabcomp)
 library(xtable)
 tabout <- print(xtable(tabcomp, label = "tab:uvmvgocounts", 
                        caption = "Number of co-enriched  GO term gene sets for each IMPC gene set for the UV (left) and MV (top) models"),
                 caption.placement = "top", 
                 floating = FALSE)
 cat(tabout, file = paste(control$dropbox_table_dir, "/mvugotab_th_", sd_mult_big_eff_thresh, ".txt", sep = ""))
+if (!control$output_to_dropbox) {
+  cat(tabout, file = paste(control$table_dir, "/Table_3a.txt", sep = ""))
+}
+
 
 
 ###################################################################
 # Table of GO term enrichment comparing UV and MV models
-
-
 str(uvmat)
-uvcols <- rowSums(!is.na(uvmat))#sapply(outl, function(x) NCOL(x$uv.bigeff))
-mvcols <- rowSums(!is.na(mvmat))#sapply(outl, function(x) NROW(x$mv.bigeff))
+uvcols <- rowSums(!is.na(uvmat))
+mvcols <- rowSums(!is.na(mvmat))
 tabuvmvcomp <- table(uvcols, mvcols)
-# binl <- list(0, 1, 2, 3:5, 6:10, 11:20, 20:50)
 binl <- list(0, 1:5, 6:10, 11:20, 21:1000)
 binnam <- sapply(binl, function(x) if(length(x) == 1){ x} else {paste(min(x), max(x), sep = "-")})
 nb <- length(binl)
@@ -617,6 +604,9 @@ tabout <- print(xtable(tabcomp_with_zeroes, label = "tab:uvmv_enriched_counts_nu
                 caption.placement = "top", 
                 floating = FALSE)
 cat(tabout, file = paste(control$dropbox_table_dir, "/uvmv_enriched_counts_num_impc_per_go_th_", sd_mult_big_eff_thresh, ".txt", sep = ""))
+if (!control$output_to_dropbox) {
+  cat(tabout, file = paste(control$table_dir, "/Table_3b.txt", sep = ""))
+}
 
 
 

@@ -1,17 +1,20 @@
-file_preproc <- file.path(control$data_dir, "impc", "IMPC_results_preprocessed.RDS")
+################################################
+# This script generates Figure 4, and Tables 1a and 1b
+################################################
+
+file_preproc <- file.path(control$data_dir, "full_existing_IMPC_phenotype_calls.RDS")
+small_file_preproc <- file.path(control$data_dir, "existing_IMPC_phenotype_calls.RDS")
 force.import.raw.data <- FALSE
 if(!file.exists(file_preproc) | force.import.raw.data){
   temp <- tempfile()
   download.file(url = "https://www.dropbox.com/s/j7a0b3ey855704o/IMPC_ALL_statistical_results.csv.gz?dl=1", temp, mode = "wb")
-  unzipped_file <- file.path(control$data_dir, "impc", "IMPC_ALL_statistical_results.csv")
+  unzipped_file <- file.path(control$data_dir, "IMPC_ALL_statistical_results.csv")
   file.remove(unzipped_file)
   R.utils::decompressFile(temp, destname = unzipped_file, ext = "gz", FUN = gzfile)
   unlink(temp)
   rin <- read.csv(file = unzipped_file)
   Data_all <- readRDS(file = control$Data_all_file)
   resimp <- readRDS(file = paste0(control$global_res_dir, "/resimp_comb.RDS"))  
-  load(file = uv.results.Y.S)
-  load(file = file.glob.res)
   genemap <- Data_all$impc$genemap
   cenmap <- Data_all$impc$cenmap
   resimp <- resimp[!grepl("fac", resimp$ph) & resimp$line.type == "trueMut", ]
@@ -39,15 +42,16 @@ if(!file.exists(file_preproc) | force.import.raw.data){
   # These are the genes missing or incomplete in EBI data
   geno.not.there <- prob.res[!prob.res$geno.sh %in% rin$geno.sh, fields.to.hugh]
   geno.there.but.missing.params <- prob.res[prob.res$geno.sh %in% rin$geno.sh, fields.to.hugh]
+  ebi_calls <- rin[, c("testid", "genotype_effect_parameter_estimate", "genotype_effect_stderr_estimate", "p_value")]
   saveRDS(rin, file = file_preproc)
+  saveRDS(ebi_calls, file = small_file_preproc)
 }
 
-rin <- readRDS(file = file_preproc)
+ebi_calls <- readRDS(file = small_file_preproc)
 resimp <- readRDS(file = paste0(control$global_res_dir, "/resimp_comb.RDS"))  
 resimp <- resimp[!grepl("fac", resimp$ph), ]
 mv_signsig_name <- paste0(control$mv_meth_nam_use, ".perm.signsig")
-resimp[which(is.na(resimp[, mv_signsig_name]))[1:10], ]
-resimp[, paste0("ebi.", c("mn", "se", "p"))] <- rin[match(resimp$testid, rin$testid), 
+resimp[, paste0("ebi.", c("mn", "se", "p"))] <- ebi_calls[match(resimp$testid, ebi_calls$testid), 
                                                     c("genotype_effect_parameter_estimate", "genotype_effect_stderr_estimate", "p_value")]
 resimp$ebi.t <- resimp$ebi.mn / resimp$ebi.se
 resimp$ebi.signsig <- sign(resimp$ebi.mn) * (resimp$ebi.p < 1e-4)
@@ -75,12 +79,19 @@ tabout.uv <- print(xtable(tab.uv.ebi.comp, label = "tab:uv_ebi_comparison",
                    caption.placement = "top", 
                    floating = FALSE)
 cat(tabout.uv, file = paste(control$dropbox_table_dir, "/uv_ebi_comp_tab.txt", sep = ""))
+if (!control$output_to_dropbox) {
+  cat(tabout.uv, file = paste(control$table_dir, "/Table_1a.txt", sep = ""))
+}
+
 tab.eb.ebi.comp[] <- prettyNum(tab.eb.ebi.comp, big.mark = ",")
 tabout.mv <- print(xtable(tab.eb.ebi.comp, label = "tab:eb_ebi_comparison", 
                           caption = "Comparison of signed phenotype hits between our MV model (left) and the existing phenotype calls in the IMPC database (top)"),
                    caption.placement = "top", 
                    floating = FALSE)
 cat(tabout.mv, file = paste(control$dropbox_table_dir, "/eb_ebi_comp_tab.txt", sep = ""))
+if (!control$output_to_dropbox) {
+  cat(tabout.mv, file = paste(control$table_dir, "/Table_1b.txt", sep = ""))
+}
 
 tab.uv.eb.comp <- table(resimp$uv.perm.signsig, resimp[, mv_signsig_name])
 
@@ -195,8 +206,8 @@ dseq <- seq(abs(rr1 - rr2), rr1 + rr2, by = .0001)
 plot(dseq, area(rr1, rr2, dseq))
 
 p_obs <- n_obs / n_tot
-x3 <- .5#p_obs / 2
-x4 <- 1.5#p_obs + 1.1
+x3 <- .5
+x4 <- 1.5
 y3 <- .9
 y_leg <- 1.75
 x1 <- x3 + d13
@@ -215,17 +226,13 @@ r_tot_missing <- sqrt(p_miss  / pi)
 
 jpeg(filename = paste0(control$dropbox_figure_dir, "/venn_diagrams.jpg"), width = 12, height = 8.5, 
      units = "in", res = 500)
-# pdf(file = paste0(control$dropbox_figure_dir, "/venn_diagrams.pdf"), 12, 8.5)
 par(oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
 col_use <- rgb(red = c(1, 0.2, 0), green = c(0, 0.2, 0), blue = c(0, 0.2, 1), alpha = .45)
-# viridis::rocket(n = 3, alpha = .6)#[sample(1:3, 3)]
-#col_use <- viridis::turbo(n = 3, alpha = .5)#[sample(1:3, 3)]
 names(col_use) <- meths
 lims_use <- c(0, 2)
 plot(0, xlim = lims_use, ylim = lims_use, xaxt = "n", yaxt = "n", 
      xlab = "", ylab = "", ty = "l", xaxs = "i", yaxs = "i",
      bty = "n")
-# polygon(x = c(0, rep(p_obs, 2), 0, 0), y = c(0, 0, 1, 1, 0), col = "white", border = 1)
 plotrix::draw.circle(x = x3, y = y3, radius = r3, nv = 10000, border = NA, 
                      col = col_use["mv"], lty = 1, density = NULL, angle = 45, lwd = 1)
 plotrix::draw.circle(x = x3, y = y3, radius = r_tot_observed, nv = 10000, border = "black", 
@@ -241,7 +248,7 @@ plotrix::draw.circle(x = x4, y = y3, radius = r_tot_missing, nv = 10000, border 
 cexax <- 1.4
 par(xpd = NA)
 legend(x = x3, y = y_leg, 
-            legend = paste0(c("All observed measurments (n = ", "IMPC database (# hits = ", "UV method (# hits = ", "MV method (# hits = "), 
+            legend = paste0(c("All observed measurements (n = ", "IMPC database (# hits = ", "UV method (# hits = ", "MV method (# hits = "), 
                                       prettyNum(c(n_obs, n_ebi_pos, n_uv_pos, n_mv_pos_obs), big.mark = ","), 
                                     ")"),
             pt.bg = c("white", col_use), 
@@ -258,6 +265,10 @@ legend(x = x4, y = y_leg, legend = paste0(c("All missing measurements (n = ", "M
        pch = 21, pt.cex = 3, xjust = 0.5, yjust = .5, cex = cexax, title = "Missing data")
 par(xpd = F)
 dev.off()
+if (!control$output_to_dropbox) {
+  file.rename(from = paste0(control$dropbox_figure_dir, "/venn_diagrams.jpg"), 
+              to = file.path(control$dropbox_figure_dir, "Figure_4.jpg"))
+}
 
 
 

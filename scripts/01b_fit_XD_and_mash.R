@@ -1,7 +1,3 @@
-
-
-
-
 require(mashr)
 ############################################################
 # Get big effects covariance matrices for MASH

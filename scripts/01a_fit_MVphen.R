@@ -35,7 +35,7 @@ if(force_rerun_em | !file.exists(file_list$emout.file.namc)){
   emout.mix <- readRDS(file = file_list$emout.file.namc)
 }
 
-if(run_type == "main" & Data == "impc"){
+if(run_masking){
   print("Calculating leave-one-procedure-out predictions")
   emout.mix <- readRDS(file = file_list$emout.file.namc)
   procun <- unique(Data_all$impc$phmap$procnam)

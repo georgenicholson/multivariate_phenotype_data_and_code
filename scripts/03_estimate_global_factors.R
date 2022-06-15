@@ -18,9 +18,8 @@ objl <- readRDS(file = control$file.objl)
 # Load data
 Data_all <- readRDS(file = control$Data_all_file)
 
-# ##########################################
-# # Get table of analyses
-# analysis_table <- create_table_of_analyses(control = control, run_type = "main")
+# Increase number of cores if available
+n_cores <- 2
 
 Data <- "impc"
 fac.meth <- "varimax"
@@ -28,7 +27,7 @@ facnam <- paste0("fac_", 1:control$nfac)
 n_subsamples <- dim(compl[[control$mv_meth_nam_use]]$mnarr)[3]
 re_run_fac_post_mn <- TRUE
 if (re_run_fac_post_mn) {
-  ncore <- min(20, n_subsamples)
+  ncore <- min(n_cores, n_subsamples)
   require(doParallel)
   if(!"clust" %in% ls()) {
     clust <- parallel::makeCluster(rep("localhost", ncore), type = "SOCK")

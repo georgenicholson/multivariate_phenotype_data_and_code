@@ -1,11 +1,13 @@
+################################################
+# This script generates Table 8
+################################################
 
-#####################################################################
-# Calculate KL divergence between split models and combined model for Factor Sensitivity Analysis
+subsampling_outputs <- readRDS(file = control$file_subsampling_outputs)
 kl1 <- kl2 <- c()
 Sig.comb <- resl.comp[[control$mv_meth_nam_use]]$Sig.comb
 P <- control$default_parameters$impc$P
 names(objl)
-subsam_meth_name <- c("impc_MVphen_N_500_nSig_1_K_20", "impc_MVphen_rand_nSig_1_K_20")[1]
+subsam_meth_name <- "impc_MVphen_N_500_nSig_1_K_20"
 for(seed in 1:control$n_subsamples_benchmark){
   Sig_for_curr_data_split <- objl[[subsam_meth_name]][[seed]]$Sigl[[1]]
   if(!is.null(Sig_for_curr_data_split)){
@@ -15,10 +17,16 @@ for(seed in 1:control$n_subsamples_benchmark){
                          determinant(Sig_for_curr_data_split, logarithm = T)$modulus - determinant(Sig.comb, logarithm = T)$modulus)
   }
 }
+
+
 seed.largest.kl <- which.max(kl1 + kl2)
-resl.comp.subset <- list(mn = compl[[subsam_meth_name]]$mnarr[, , seed.largest.kl], 
-                         sd = compl[[subsam_meth_name]]$sdarr[, , seed.largest.kl], 
-                         lfsr = compl[[subsam_meth_name]]$lfsrarr[, , seed.largest.kl])
+# resl.comp.subset <- list(mn = compl[[subsam_meth_name]]$mnarr[, , seed.largest.kl], 
+#                          sd = compl[[subsam_meth_name]]$sdarr[, , seed.largest.kl], 
+#                          lfsr = compl[[subsam_meth_name]]$lfsrarr[, , seed.largest.kl])
+resl.comp.subset <- list(mn = subsampling_outputs[[subsam_meth_name]]$mnarr[, , seed.largest.kl], 
+                         sd = subsampling_outputs[[subsam_meth_name]]$sdarr[, , seed.largest.kl], 
+                         lfsr = subsampling_outputs[[subsam_meth_name]]$lfsrarr[, , seed.largest.kl])
+
 
 resl_into_err_rate_fn <- list(uv = resl.comp$uv, mv_subsam = resl.comp.subset)
 out.perm <- err.rate.control(control = control, 
@@ -56,5 +64,8 @@ tabout_subsam <- print(xtable(tab_curr, label = "tab:subsampling_comp",
                    caption.placement = "top",
                    floating = FALSE)
 cat(tabout_subsam, file = paste(control$dropbox_table_dir, "/subsampling_comp.txt", sep = ""))
+if (!control$output_to_dropbox) {
+  cat(tabout_subsam, file = paste(control$table_dir, "/Table_8.txt", sep = ""))
+}
 
 

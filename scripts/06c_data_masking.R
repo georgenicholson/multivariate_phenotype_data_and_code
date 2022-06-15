@@ -1,9 +1,13 @@
+################################################
+# This script generates Figure S11
+################################################
+
 resimp <- readRDS(file = control$file.resimp)
 resimp <- resimp[!grepl("fac", resimp$ph), ]
 
-resimp$eb.mn.loo.proc <- compl[[control$mv_meth_nam_use]]$loocv.mn.comb[cbind(resimp$geno, resimp$ph)]
-resimp$eb.sd.loo.proc <- compl[[control$mv_meth_nam_use]]$loocv.sd.comb[cbind(resimp$geno, resimp$ph)]
-resimp$eb.t.loo.proc <- resimp$eb.mn.loo.proc / resimp$eb.sd.loo.proc
+# resimp$eb.mn.loo.proc <- compl[[control$mv_meth_nam_use]]$loocv.mn.comb[cbind(resimp$geno, resimp$ph)]
+# resimp$eb.sd.loo.proc <- compl[[control$mv_meth_nam_use]]$loocv.sd.comb[cbind(resimp$geno, resimp$ph)]
+# resimp$eb.t.loo.proc <- resimp$eb.mn.loo.proc / resimp$eb.sd.loo.proc
 
 
 ######################################
@@ -64,6 +68,11 @@ for(compc in c("uv", "eb")[1]){
   mtext(side = 3, text = fdrlab, line = .5, cex = 1)
 }
 dev.off()
-file.copy(from = paste(control$figure_dir, "/", fnamc, sep = ""),
-          to = paste(control$dropbox_figure_dir, "/", fnamc, sep = ""), overwrite = TRUE)
+if (control$output_to_dropbox) {
+  file.copy(from = paste(control$figure_dir, "/", fnamc, sep = ""),
+            to = paste(control$dropbox_figure_dir, "/", fnamc, sep = ""), overwrite = TRUE)
+} else {
+  file.rename(from = paste(control$figure_dir, "/", fnamc, sep = ""), 
+              to = file.path(control$figure_dir, "Figure_S11.jpg"))
+}
 

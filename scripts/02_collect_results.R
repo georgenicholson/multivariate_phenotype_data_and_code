@@ -1,3 +1,7 @@
+if (!"run_type" %in% ls()) {
+  stop("run_type not specified, please specify as one of 'demo', 'main', 'benchmark'")
+}
+
 ##########################################
 # Source function files
 fns_to_source <- list.files("scripts/functions", full.names = TRUE)
@@ -16,7 +20,7 @@ Data_all <- readRDS(control$Data_all_file)
 ##########################################
 # Get table of analyses
 # change run_type to "benchmark" if you have finished running the benchmark analyses
-analysis_table <- create_table_of_analyses(control = control, check_status = T, run_type = "main")
+analysis_table <- create_table_of_analyses(control = control, check_status = T, run_type = run_type)
 
 resl.comp <- compl <- Sigll <- Ksigl <- pimatl <- Sighatl <- Rl <- omegaseql <- samll <- objl <- list()
 resl.comp$uv <- list(mn = Data_all$impc$Y_raw[Data_all$impc$sam_names, Data_all$impc$meas_names], 
@@ -28,8 +32,6 @@ for (scen in 1:nrow(analysis_table)) {
   }
   sam_names <- Data_all[[Data]]$sam_names
   N_all <- Data_all[[Data]]$N_all
-  # train_test_list_file_curr <- file.path("output", "train_test_splits", paste0(Data, "_N_", N, "_P_", P, ".RDS"))
-  # train_test_list <- readRDS(file = train_test_list_file_curr)
   train_test_list <- get_train_test_split(control = control, Data_all = Data_all, N = N, P = P, Data = Data, n_subsamples = n_subsamples)
   
   meas_names <- train_test_list$phens_to_use
@@ -95,7 +97,7 @@ for (scen in 1:nrow(analysis_table)) {
       if (!emloaded | !resloaded) {
         warning(paste0(namc, " subsamseed ", subsamseed, " not loaded"))
       }
-      if (namc == control$mv_meth_nam_use) {#Meth == "MVphen" & nSig == 1 & Data == "impc"){
+      if (namc == control$mv_meth_nam_use) {
         if (loocv.loaded) {
           compl[[namc]]$loocv.mnarr[match(rownames(loocv.store$mn), sam_names), 
                                     match(colnames(loocv.store$mn), meas_names), subsamseed] <- loocv.store$mn
@@ -186,5 +188,22 @@ for (scen in 1:nrow(analysis_table)) {
 saveRDS(resl.comp, file = control$file.resl.comp)
 saveRDS(compl, file = control$file.compl)
 saveRDS(objl, file = control$file.objl)
+
+############################################################################################
+# Extract smaller objects from compl for storing on Github to allow generation of plots
+
+cvlik_matrices <- lapply(compl, function(x) x["llmat.raw"])
+saveRDS(cvlik_matrices, file = control$file_cv_lik_matrices)
+
+Sig_and_R_combined_outputs <- lapply(compl, function(x) x[c("Sig.comb", "R.comb")])
+saveRDS(Sig_and_R_combined_outputs, file = control$file_Sig_R_comb)
+
+subsam_meth_name <- "impc_MVphen_N_500_nSig_1_K_20"
+subsampling_outputs <- compl[subsam_meth_name]
+saveRDS(subsampling_outputs, file = control$file_subsampling_outputs)
+
+
+
+
 
 

@@ -54,7 +54,7 @@ create_table_of_analyses <- function(control, check_status = F, run_type = c("de
     runtab[runtab$Data == "eqtl" & runtab$Meth == "mash", "mem"] <- 4600
     runtab <- runtab[order(runtab$Data, runtab$Meth, runtab$nSig), ]
     runtab$rand <- ifelse(grepl("rand", runtab$Meth), T, F)
-    runtab$loocv <- ifelse(runtab$Meth == "MVphen" & runtab$nSig == 1 & runtab$N == 2000, T, F)
+    runtab$loocv <- ifelse(runtab$Meth == "MVphen" & runtab$nSig == 1 & runtab$N == 2000 & runtab$MVphen_K == 20, T, F)
     rownames(runtab) <- 1:nrow(runtab)
     if (run_type == "test_benchmark") {
       runtab$n_subsamples <- 2  
@@ -69,60 +69,28 @@ create_table_of_analyses <- function(control, check_status = F, run_type = c("de
              runtab$Meth == "MVphen" & runtab$MVphen_K == control$nfac, "n_subsamples"] <- control$n_subsamples_main
     
   }  
-  runtab
-  
-  #############################################
-  # Check when each scenario was last run
-  ###########################################
-  # if(check_status) {
-    # fcheckfields <- c("emout_ok", "emout_st", "emout_en", "res_ok", "res_st", "res_en", "loocv_ok", 
-    #                    "loocv_st", "loocv_en", "fac_ok", "fac_st", "fac_en")
-    # runtab[, fcheckfields] <- NA
-    runtab[, c("file_core_name", "meth")] <- NA
-    for(scen in 1:nrow(runtab)){
-      # print(scen)
-      for(j in 1:ncol(runtab))
-        assign(colnames(runtab)[j], runtab[scen, j], pos = sys.frame(which = 0))
-      # if(grepl("MVphen", Meth)){
-      #     variables_in_filename_use <- control$variables_in_filename_MVphen
-      # }
-      # if(Meth == "mash"){
-      #   variables_in_filename_use <- control$variables_in_filename_mash
-      # }
-      # if(Meth == "XD"){
-      #   variables_in_filename_use <- control$variables_in_filename_XD
-      # }
-      variables_in_filename_use <- control$variables_in_filename
-      XDmeth <- Meth
-      file_core_name <- c()
-      for(subsamseed in 1:n_subsamples) {
-        file_core_name <- c(file_core_name, paste0(paste(paste(variables_in_filename_use, 
-                                           sapply(variables_in_filename_use, function(x) get(x, envir = environment())), sep = "_"), 
-                                           collapse = "_")))
-      }
-      # print("made itana ")
-      loocv_results_filename <- paste0(control$methods_comp_dir, "/", file_core_name, "_loocv_res.RData")
-      factor_results_filename <- paste0(control$methods_comp_dir, "/", file_core_name, "_facres.RData")
-      basic_results_filename <- paste0(control$methods_comp_dir, "/", file_core_name, 
-                               switch(Meth, eb = "_res.RData", mash = "_mash_resl.RData", XD = "_bovy_resl.RData"))
-      emout_file_name <- paste0(control$methods_comp_dir, "/", file_core_name, 
-                                switch(Meth, eb = "_emout.RData", mash = NA, XD = NA))
-      # runtab[scen, fcheckfields] <- list(all(file.exists(emout_file_name)),
-      #                                    format(min(file.info(emout_file_name)[, "ctime"]), format = "%d-%b"),
-      #                                    format(max(file.info(emout_file_name)[, "ctime"]), format = "%d-%b"),
-      #                                    all(file.exists(basic_results_filename)),
-      #                                    format(min(file.info(basic_results_filename)[, "ctime"]), format = "%d-%b"),
-      #                                    format(max(file.info(basic_results_filename)[, "ctime"]), format = "%d-%b"),
-      #                                    all(file.exists(loocv_results_filename)),
-      #                                    format(min(file.info(loocv_results_filename)[, "ctime"]), format = "%d-%b"),
-      #                                    format(max(file.info(loocv_results_filename)[, "ctime"]), format = "%d-%b"),
-      #                                    all(file.exists(factor_results_filename)),
-      #                                    format(min(file.info(factor_results_filename)[, "ctime"]), format = "%d-%b"),
-      #                                    format(max(file.info(factor_results_filename)[, "ctime"]), format = "%d-%b"))
-      runtab$file_core_name[scen] <- gsub("seed\\_1", "seed\\_XXX", file_core_name[1])
-    # }
+
+  runtab[, c("file_core_name")] <- NA
+  for (scen in 1:nrow(runtab)) {
+    for (j in 1:ncol(runtab)) {
+      assign(colnames(runtab)[j], runtab[scen, j], pos = sys.frame(which = 0))
+    }
+    variables_in_filename_use <- control$variables_in_filename
+    XDmeth <- Meth
+    file_core_name <- c()
+    for (subsamseed in 1:n_subsamples) {
+      file_core_name <- c(file_core_name, paste0(paste(paste(variables_in_filename_use, 
+                                         sapply(variables_in_filename_use, function(x) get(x, envir = environment())), sep = "_"), 
+                                         collapse = "_")))
+    }
+    loocv_results_filename <- paste0(control$methods_comp_dir, "/", file_core_name, "_loocv_res.RData")
+    factor_results_filename <- paste0(control$methods_comp_dir, "/", file_core_name, "_facres.RData")
+    basic_results_filename <- paste0(control$methods_comp_dir, "/", file_core_name, 
+                             switch(Meth, eb = "_res.RData", mash = "_mash_resl.RData", XD = "_bovy_resl.RData"))
+    emout_file_name <- paste0(control$methods_comp_dir, "/", file_core_name, 
+                              switch(Meth, eb = "_emout.RData", mash = NA, XD = NA))
+    runtab$file_core_name[scen] <- gsub("seed\\_1", "seed\\_XXX", file_core_name[1])
   }
-  # runtab$file_core_name <- 
   rownames(runtab) <- 1:nrow(runtab)
   return(runtab)  
 }
