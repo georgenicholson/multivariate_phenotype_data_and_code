@@ -2,13 +2,13 @@
 # This script generates Figure 4, and Tables 1a and 1b
 ################################################
 
-file_preproc <- file.path(control$data_dir, "full_existing_IMPC_phenotype_calls.RDS")
-small_file_preproc <- file.path(control$data_dir, "existing_IMPC_phenotype_calls.RDS")
+file_preproc <- file.path(control$global_res_dir, "full_existing_IMPC_phenotype_calls.RDS")
+small_file_preproc <- file.path(control$global_res_dir, "existing_IMPC_phenotype_calls.RDS")
 force.import.raw.data <- FALSE
-if(!file.exists(file_preproc) | force.import.raw.data){
+if(!file.exists(small_file_preproc) | force.import.raw.data){
   temp <- tempfile()
   download.file(url = "https://www.dropbox.com/s/j7a0b3ey855704o/IMPC_ALL_statistical_results.csv.gz?dl=1", temp, mode = "wb")
-  unzipped_file <- file.path(control$data_dir, "IMPC_ALL_statistical_results.csv")
+  unzipped_file <- file.path(control$global_res_dir, "IMPC_ALL_statistical_results.csv")
   file.remove(unzipped_file)
   R.utils::decompressFile(temp, destname = unzipped_file, ext = "gz", FUN = gzfile)
   unlink(temp)

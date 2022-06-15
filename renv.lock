@@ -63,6 +63,17 @@
       "Hash": "b1a93bed5debda5775636086fdca017b",
       "Requirements": []
     },
+    "BiocVersion": {
+      "Package": "BiocVersion",
+      "Version": "3.13.1",
+      "Source": "Bioconductor",
+      "git_url": "https://git.bioconductor.org/packages/BiocVersion",
+      "git_branch": "master",
+      "git_last_commit": "3466413",
+      "git_last_commit_date": "2020-10-27",
+      "Hash": "94abf4508341d86378c2a78d219b3fca",
+      "Requirements": []
+    },
     "Biostrings": {
       "Package": "Biostrings",
       "Version": "2.60.2",
@@ -174,6 +185,7 @@
         "gtable",
         "htmlTable",
         "htmltools",
+        "lattice",
         "latticeExtra",
         "nnet",
         "rpart",
@@ -210,17 +222,6 @@
         "png"
       ]
     },
-    "KeyboardSimulator": {
-      "Package": "KeyboardSimulator",
-      "Version": "2.6.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "OS_type": "windows",
-      "Hash": "bc388e535fbeaead321ed2ced9e9953a",
-      "Requirements": [
-        "Rcpp"
-      ]
-    },
     "MASS": {
       "Package": "MASS",
       "Version": "7.3-57",
@@ -235,7 +236,9 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "699c47c606293bdfbc9fd78a93c9c8fe",
-      "Requirements": []
+      "Requirements": [
+        "lattice"
+      ]
     },
     "R.methodsS3": {
       "Package": "R.methodsS3",
@@ -507,6 +510,14 @@
       "Hash": "c5f8447373ec2a0f593c694024e5b7ee",
       "Requirements": []
     },
+    "codetools": {
+      "Package": "codetools",
+      "Version": "0.2-18",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "019388fc48e48b3da0d3a76ff94608a8",
+      "Requirements": []
+    },
     "colorspace": {
       "Package": "colorspace",
       "Version": "2.0-3",
@@ -615,6 +626,7 @@
       "Repository": "CRAN",
       "Hash": "618609b42c9406731ead03adf5379850",
       "Requirements": [
+        "codetools",
         "iterators"
       ]
     },
@@ -816,6 +828,14 @@
       "Hash": "3d5108641f47470611a32d0bdf357a72",
       "Requirements": []
     },
+    "lattice": {
+      "Package": "lattice",
+      "Version": "0.20-45",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b64cdbb2b340437c4ee047a1f4c4377b",
+      "Requirements": []
+    },
     "latticeExtra": {
       "Package": "latticeExtra",
       "Version": "0.6-29",
@@ -825,6 +845,7 @@
       "Requirements": [
         "RColorBrewer",
         "jpeg",
+        "lattice",
         "png"
       ]
     },
@@ -948,7 +969,9 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "dbca60742be0c9eddc5205e5c7ca1f44",
-      "Requirements": []
+      "Requirements": [
+        "lattice"
+      ]
     },
     "nnet": {
       "Package": "nnet",
@@ -1275,7 +1298,9 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "277b8b4c5b7b47e664aebfe024a2092e",
-      "Requirements": []
+      "Requirements": [
+        "lattice"
+      ]
     }
   }
 }
