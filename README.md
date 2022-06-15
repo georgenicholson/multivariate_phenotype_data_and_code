@@ -1,7 +1,7 @@
 # multivariate_phenotype_data_and_code
 
 This repository contains the data and R scripts to reproduce the results reported 
-in 'Illuminating the mammalian genome with multivariate phenotype analysis'. 
+in 'Multivariate phenotype analysis enables genome-wide inference of mammalian gene function'. 
 
 ## Installation
 
@@ -48,7 +48,11 @@ Data_all <- readRDS("data/Data_all.RDS")
 
 ## Generate Figures from paper
 
-To generate the Figures and Tables in the paper please run
+To generate the Figures and Tables in the paper please download the analysis outputs (output.zip) from our [Zenodo submission](https://doi.org/10.5281/zenodo.6644193). Unzip "output.zip" directly in the root of the repository folder, creating a folder structure "output/global_results/" in which the precomputed output files are. Check the files are there:
+```
+list.files("output/global_results")
+```
+Once the files are in place please run
 ```
 source("scripts/05_generate_results.R")
 ```
