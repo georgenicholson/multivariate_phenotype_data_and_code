@@ -48,7 +48,7 @@ Data_all <- readRDS("data/Data_all.RDS")
 
 ## Generate figures from paper
 
-To generate the Figures and Tables in the paper please download the analysis outputs (output.zip) from our [Zenodo submission](https://doi.org/10.5281/zenodo.6644193). Unzip "output.zip" directly in the root of the repository folder, creating a folder structure "output/global_results/" in which the precomputed output files are. Check the files are there:
+To generate the Figures and Tables in the paper, unzip the analysis outputs file "output.zip" attached to our GitHub release. Unzip it directly in the root of the repository folder, creating a folder structure "output/global_results/" containing the precomputed output files. Check the files are there:
 ```
 list.files("output/global_results")
 ```
