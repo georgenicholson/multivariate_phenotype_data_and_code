@@ -72,10 +72,19 @@ get_control_parameters_mv <- function(control = list()) {
   defaults$methods_comp_dir <- paste0(defaults$output_dir, "/methods_comparison")
   defaults$train_test_samples_dir <- paste0(defaults$output_dir, "/train_test_splits")
   defaults$figure_dir <- "figures"
-  defaults$dropbox_figure_dir <- "C:/Users/nicho/Dropbox/Apps/Overleaf/Illuminating the mammalian genome with multivariate phenotype analysis/revision_figures"
-  defaults$dropbox_text_numbers_dir <- "C:/Users/nicho/Dropbox/Apps/Overleaf/Illuminating the mammalian genome with multivariate phenotype analysis/revision_text_numbers"
-  defaults$dropbox_table_dir <- "C:/Users/nicho/Dropbox/Apps/Overleaf/Illuminating the mammalian genome with multivariate phenotype analysis/revision_tables"
-  
+  defaults$table_dir <- "tables"
+  defaults$text_numbers_dir <- "text_numbers"
+  defaults$output_to_dropbox <- FALSE
+  if (defaults$output_to_dropbox) {
+    defaults$dropbox_figure_dir <- "C:/Users/nicho/Dropbox/Apps/Overleaf/Illuminating the mammalian genome with multivariate phenotype analysis/revision_figures"
+    defaults$dropbox_text_numbers_dir <- "C:/Users/nicho/Dropbox/Apps/Overleaf/Illuminating the mammalian genome with multivariate phenotype analysis/revision_text_numbers"
+    defaults$dropbox_table_dir <- "C:/Users/nicho/Dropbox/Apps/Overleaf/Illuminating the mammalian genome with multivariate phenotype analysis/revision_tables"
+  } else {
+    defaults$dropbox_figure_dir <- defaults$figure_dir
+    defaults$dropbox_text_numbers_dir <- defaults$text_numbers_dir
+    defaults$dropbox_table_dir <- defaults$table_dir
+  }
+
   
   #####################################################################
   # File names
@@ -86,9 +95,14 @@ get_control_parameters_mv <- function(control = list()) {
   defaults$file.objl <- paste0(defaults$global_res_dir, "/global_objl.RDS")
   defaults$file.resimp <- paste0(defaults$global_res_dir, "/resimp_comb.RDS")
   defaults$file_raw_factor_results <- paste0(defaults$global_res_dir, "/raw_factor_results.RDS")
+  defaults$file_cv_lik_matrices <- paste0(defaults$global_res_dir, "/cv_lik_matrices.RDS")
+  defaults$file_Sig_R_comb <- paste0(defaults$global_res_dir, "/Sig_R_comb_outputs.RDS")
+  defaults$file_subsampling_outputs <- paste0(defaults$global_res_dir, "/subsampling_outputs.RDS")
   defaults$file_raw_factor_results_parallel_output <- paste0(defaults$global_res_dir, "/raw_factor_results_parallel.RDS")
   defaults$Data_all_file <- file.path(defaults$data_dir, "Data_all.RDS") 
   defaults$file.go.results <- paste0(defaults$global_res_dir, "/global_go_results.RData")
+  
+  
   
   control_out <- control
   for(par_input in names(defaults)) {

@@ -27,10 +27,6 @@ split.use <- 1
 resl.err.rates.one.split <- c(list(uv = resl.comp$uv), lapply(compl[grepl(Data, names(compl))], 
                                    function(x) list(mn = x$mnarr[, , split.use], sd = x$sdarr[, , split.use], lfsr = x$lfsrarr[, , split.use])))
 
-##########################################
-# Get table of analyses
-analysis_table <- create_table_of_analyses(control = control, check_status = T, run_type = "main")
-
 for(err.data.type in c("comb", "single")[1]){
   resl.err.rates <- switch(err.data.type, 
                            comb = resl.err.rates.comb, 
@@ -98,6 +94,14 @@ resimp$eb.th.final <- resimp[, paste0(control$mv_meth_nam_use, ".th.final")]
 resimp <- resimp[resimp$line.type == control$nam.truemut, ]
 resimp$uv.sig <- abs(resimp$uv.perm.signsig)
 resimp$uv.signsig <- resimp$uv.perm.signsig
+
+resimp_nonfac_rows <- which(!grepl("fac", resimp$ph))
+resimp$eb.mn.loo.proc<-resimp$eb.sd.loo.proc <- NA
+resimp$eb.mn.loo.proc[resimp_nonfac_rows] <- compl[[control$mv_meth_nam_use]]$loocv.mn.comb[cbind(resimp$geno, resimp$ph)[resimp_nonfac_rows, ]]
+resimp$eb.sd.loo.proc[resimp_nonfac_rows] <- compl[[control$mv_meth_nam_use]]$loocv.sd.comb[cbind(resimp$geno, resimp$ph)[resimp_nonfac_rows, ]]
+resimp$eb.t.loo.proc <- resimp$eb.mn.loo.proc / resimp$eb.sd.loo.proc
+
+
 saveRDS(resimp, file = control$file.resimp)  
 
 

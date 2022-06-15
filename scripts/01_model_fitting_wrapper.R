@@ -1,13 +1,8 @@
- 
-# Choose analysis type
-run_type <- c("demo", "main", "benchmark", "test_benchmark")[1]
-# Select which row of analysis_table to run 
-scen <- 3
-# Set which cross validation fold
-subsamseed <- 1 
-
-if(run_type == "main"){
-  scen <- 1
+if (!"run_type" %in% ls()) {
+  warning("run_type not specified, setting run_type <- 'demo' by default")
+  ########################################################## 
+  # Choose analysis type (see README)
+  run_type <- c("demo", "main", "benchmark", "test_benchmark")[1]
 }
 
 ##################################################################
@@ -35,7 +30,9 @@ control <- get_control_parameters_mv()
 
 ##########################################
 # Create directory structure
-for (dirc in c(control$output_dir, control$methods_comp_dir, control$global_res_dir, control$data_dir, control$train_test_samples_dir)) {
+dirs_to_create <- c("output_dir", "methods_comp_dir", "global_res_dir", "data_dir", "train_test_samples_dir",
+                              "dropbox_figure_dir", "dropbox_text_numbers_dir", "dropbox_table_dir")
+for (dirc in c(control[dirs_to_create])) {
   dir.create(dirc, recursive = TRUE, showWarnings = FALSE)
 }
 print(getwd())
@@ -69,6 +66,7 @@ for (scen in 1:nrow(analysis_table)) {
     Data <- analysis_table$Data[scen]
     MVphen_K <- analysis_table$MVphen_K[scen]
     n_subsamples <- analysis_table$n_subsamples[scen]
+    run_masking <- analysis_table$loocv[scen]
     XDmeth <- Meth
     
     file_list <- get_file_list(control = control, 

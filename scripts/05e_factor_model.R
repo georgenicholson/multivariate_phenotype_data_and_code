@@ -1,6 +1,9 @@
+################################################
+# This script generates Figures S8, 8
+################################################
+
 resl.comp.fac <- readRDS(file = control$file_raw_factor_results)
 resimp <- readRDS(file = control$file.resimp)
-# resl <- resl.comp
 resl.comp$eb <- resl.comp[[control$mv_meth_nam_use]]
 sig <- resl.comp$eb$Sig.comb
 fac.meth <- c("varimax", "promax")[1]
@@ -33,11 +36,18 @@ par(mar = c(5, 5, 2, 2))
 plot(c(0, 1:ncol(sig)), c(0, cumexpl), ty = "l", xlab = "Number of eigenvectors", 
      ylab = "", ylim = c(0, 1), xaxs = "i", yaxs = "i", las = 1)
 lines(x = c(nfac, nfac, 0), y = c(0, propexp, propexp), lty = 3)
-# axis(side = 2, at = propexp, labels = formatC(propexp, format = "f", digits = 3), las = 2, col = 1)
 mtext(side = 2, text = "Cumulative proportion of correlation explained", line = 4)
 dev.off()
-file.copy(from = paste(control$figure_dir, "/", fnamc, sep = ""),
-          to = paste(control$dropbox_figure_dir, "/", fnamc, sep = ""), overwrite = TRUE)
+
+if (control$output_to_dropbox) {
+  file.copy(from = paste(control$figure_dir, "/", fnamc, sep = ""),
+            to = paste(control$dropbox_figure_dir, "/", fnamc, sep = ""), overwrite = TRUE)
+} else {
+  file.rename(from = paste(control$figure_dir, "/", fnamc, sep = ""), 
+              to = file.path(control$figure_dir, "Figure_S8.jpg"))
+}
+
+
 
 save.num <- c("nfac")
 for(numc in save.num)
@@ -87,7 +97,6 @@ n.fac.pr.test <- .5 * nfac * (nfac - 1)
 orqmat <- p.adjust(orpmat[lower.tri(orpmat)], method = "BY")# * n.fac.pr.test
 fac.sig.th <- .05
 n.fac.pr.sig <- sum(orqmat < fac.sig.th, na.rm = T)
-# n.fac.pr.sig <- sum(orqmat < fac.sig.th, na.rm = T) / 2
 
 #order phenotypes within procedure for factor plot
 phord.fac <- Data_all$impc$phord
@@ -134,15 +143,34 @@ facmap <- data.frame(original = facnam, reordered = facord)
 tab.fac.interp$factor_num_original <- rep(facord, each = nloadlook)#facmap[match(paste0("fac_", tab.fac.interp$factor.num), facmap$reordered), "original"]
 write.csv(tab.fac.interp, file = "output/factor_interp_to_be_completed.csv")
 
-fac_annot_tab <- read.csv(file = "output/factor_interp_completed.csv", stringsAsFactors = FALSE)
-facannot <- unique(fac_annot_tab$factor.annotation)
-names(facannot) <- paste0("ord", 1:nfac)
+##################################################
+# Manually curated factor annotations, based on output/factor_interp_to_be_completed.csv 
+##################################################
+facannot <- c(ord1 = "Body size (-)", 
+              ord2 = "Fat mass (-)", 
+              ord3 = "Activity/exploration 1 (+)", 
+              ord4 = "Deafness (+)", 
+              ord5 = "Grip strength (-)", 
+              ord6 = "Sensorimotor gating (-)", 
+              ord7 = "Cholesterol (+)", 
+              ord8 = "Heart rate variability (-)", 
+              ord9 = "Neutrophil:lymphocyte ratio (+)", 
+              ord10 = "White blood cell count (+)", 
+              ord11 = "Heart rate (+)", 
+              ord12 = "Activity/exploration 2 (+)", 
+              ord13 = "Cardiac output (-)", 
+              ord14 = "Red blood cell count (-)", 
+              ord15 = "Activity/exploration 3 (+)", 
+              ord16 = "Coordination/balance (-)", 
+              ord17 = "Cardiac dysfunction (+)", 
+              ord18 = "Sleep bout length (-)", 
+              ord19 = "Sleep daily percent (+)", 
+              ord20 = "Eosinophil differential (-)")
 
 
 ######################################################
 #Plot factor interpretation panel figure for paper
 ################################################
-library("KeyboardSimulator")
 jpegc <- T
 devwid <- 9
 devhei <- 11
@@ -228,8 +256,6 @@ barplot(barmat, col = c("red", "blue"), xaxs = "i", horiz = TRUE, yaxs = "i",
         xaxt = "s", xlab = "", ylab = "", las = 1, cex.axis = cex.axis, yaxt = "n", las = 2)
 mtext(side = 1, at = max(barmat) * 1.3, line = 1, text = "(c)", cex = cexlet)
 mtext(side = 1, text = "% lines annotated", cex = cexax.mtext.big, line = 2)
-# legend(x = "topright", legend = c("Positive", "Negative"), title = "Perturbation in factor score", pch = 22, pt.bg = c("red", "blue"), col = 1,
-#        cex = cexleg)
 
 barwid <- .015
 barhei <- .05
@@ -277,16 +303,16 @@ if(orth == 20){
 axis(side = 2, las = 2, cex.axis = cexax4, labels = oratlab, at = log(orat), las = 1)
 mtext(side = 2, line = linec, text = "Odds Ratio", cex = cexax.mtext.big, las = 0)
 mtext(side = 2, line = linec * lin.mult, text = "in panel (b)", cex = cexax.mtext.big * ax.mult, las = 0)
-# 
 if(jpegc){
   dev.off()
+  if (control$output_to_dropbox) {
     file.copy(from = paste(control$figure_dir, "/", fnamc, sep = ""),
               to = paste(control$dropbox_figure_dir, "/", fnamc, sep = ""), overwrite = TRUE)
+  } else {
+    file.rename(from = paste(control$figure_dir, "/", fnamc, sep = ""), 
+                to = file.path(control$figure_dir, "Figure_8.jpg"))
+  }
 }
-# 
-# image(x = 1:nfac, y = 1:nfac, log(ormatpl), zlim = c(-1, 1) * log(orth),
-#       xaxt = "n", yaxt = "n", col = control$heat_col_palette, xlab = "", ylab = "")
-# keybd.press('ctrl+alt+u')
 
 
 

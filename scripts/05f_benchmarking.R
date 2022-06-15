@@ -1,12 +1,15 @@
+################################################
+# This script generates Figure S9, and Tables 9, 10, 11 
+################################################
 
-
+cvlik_matrices <- readRDS(file = control$file_cv_lik_matrices)
 linemap <- Data_all$impc$linemap
 methnam_code <- c("MVphen", "ComposeMV")[1]
 methnam_out <- c("MVphen", "ComposeMV")[2]
 truemuts <- linemap$geno[linemap$line.type == control$nam.truemut]
 negcons <- linemap$geno[linemap$line.type == control$nam.negcon]
-llmean.splitmat.true <- sapply(compl[grepl("impc", names(compl))], function(x) colMeans(x$llmat.raw[truemuts, 1:10], na.rm = T))
-llmean.splitmat.null <- sapply(compl[grepl("impc", names(compl))], function(x) colMeans(x$llmat.raw[negcons, 1:10], na.rm = T))
+llmean.splitmat.true <- sapply(cvlik_matrices[grepl("impc", names(cvlik_matrices))], function(x) colMeans(x$llmat.raw[truemuts, 1:10], na.rm = T))
+llmean.splitmat.null <- sapply(cvlik_matrices[grepl("impc", names(cvlik_matrices))], function(x) colMeans(x$llmat.raw[negcons, 1:10], na.rm = T))
 true.mns <- colMeans(llmean.splitmat.true, na.rm = T)
 true.ses <- apply(llmean.splitmat.true, 2, function(v) sd(v, na.rm = T) / sqrt(length(v)))
 null.mns <- colMeans(llmean.splitmat.null, na.rm = T)
@@ -64,7 +67,10 @@ for(j in rates.format){
 }
 tail(restaball)
 
-pdf(file = paste0(control$dropbox_figure_dir, "/rand_init_cv_lik.pdf"), 6, 6)
+
+jpeg(filename = paste0(control$dropbox_figure_dir, "/rand_init_cv_lik.jpg"), width = 6, height = 6, 
+     units = "in", res = 500)
+# pdf(file = paste0(control$dropbox_figure_dir, "/rand_init_cv_lik.pdf"), 6, 6)
 par(oma = c(1, 1, 1, 1), mar = c(4, 4, 4, 4))
 plot(llmean.splitmat.true[, "impc_MVphen_nSig_1_K_20"], llmean.splitmat.true[, "impc_MVphen_rand_nSig_1_K_20"],
      main = "Cross-validated log likelihood comparison",
@@ -72,6 +78,11 @@ plot(llmean.splitmat.true[, "impc_MVphen_nSig_1_K_20"], llmean.splitmat.true[, "
      ylab = "Randomly initialised")
 abline(0, 1)
 dev.off()
+
+if (!control$output_to_dropbox) {
+  file.rename(from = paste0(control$dropbox_figure_dir, "/rand_init_cv_lik.jpg"), 
+              to = file.path(control$dropbox_figure_dir, "Figure_S9.jpg"))
+}
 
 #############################################################################
 #Output power and type I error table
@@ -131,6 +142,9 @@ tabout.test.with.header <- gsub("\n\\\\hline\nMe",
                                        # "\\\\cline\\{3\\-4\\}\\\\cline\\{5\\-7\\}\\\nMe"), tabout.test)
                                        "\\\nMe"), tabout.test)
 cat(tabout.test.with.header, file = paste(control$dropbox_text_numbers_dir, "/hitrates_", err.data.type, ".txt", sep = ""))
+if (!control$output_to_dropbox) {
+  cat(tabout.test.with.header, file = paste(control$table_dir, "/Table_9.txt", sep = ""))
+}
 
 
 colkeep.lik <- c("Method", "S", "K", "cvlik.ci")#, "hit.nonimp.ci", "hit.imp.ci")
@@ -151,6 +165,9 @@ tabout.lik <- print(xtable(restaball.lik, label = "tab:cvlik_impc", align = rep(
                             include.rownames = F, 
                             floating = FALSE)
 cat(tabout.lik, file = paste(control$dropbox_text_numbers_dir, "/cvlik_table.txt", sep = ""))
+if (!control$output_to_dropbox) {
+  cat(tabout.lik, file = paste(control$table_dir, "/Table_10.txt", sep = ""))
+}
 
 
 
@@ -165,7 +182,7 @@ Data <- "eqtl"
 model_ordered <- c("eqtl_XD_nSig_1", "eqtl_XD_nSig_2", "eqtl_mash_nSig_1", "eqtl_MVphen_nSig_1_K_15", "eqtl_MVphen_nSig_1_K_20", 
                    "eqtl_MVphen_nSig_1_K_30", "eqtl_MVphen_nSig_1_K_40", "eqtl_MVphen_nSig_2_K_15", 
                    "eqtl_MVphen_nSig_2_K_20", "eqtl_MVphen_nSig_2_K_30", "eqtl_MVphen_nSig_2_K_40") 
-llmean.splitmat.true <- sapply(compl[grepl(Data, names(compl))], function(x) colMeans(x$llmat.raw[, 1:10], na.rm = T))
+llmean.splitmat.true <- sapply(cvlik_matrices[grepl(Data, names(cvlik_matrices))], function(x) colMeans(x$llmat.raw[, 1:10], na.rm = T))
 llmean.splitmat.true <- llmean.splitmat.true[, model_ordered]
 # llmean.splitmat.true <- llmean.splitmat.true[, order(match(colnames(llmean.splitmat.true), c("UV", "XD", "mash", methnam_code)))]
 true.mns <- colMeans(llmean.splitmat.true, na.rm = T)
@@ -184,7 +201,13 @@ tabout_eqtl <- print(xtable(res_to_fill, label = "tab:cvlik_impc", align = rep("
                     sanitize.text.function = function(x){x},
                     include.rownames = F, 
                     floating = FALSE)
-cat(tabout_eqtl, file = paste(control$dropbox_text_numbers_dir, "/eqtl_cvlik_table.txt", sep = ""))
+
+fnamc <- "eqtl_cvlik_table.txt"
+cat(tabout_eqtl, file = paste(control$dropbox_text_numbers_dir, "/", fnamc, sep = ""))
+if (!control$output_to_dropbox) {
+  cat(tabout_eqtl, file = paste(control$table_dir, "/Table_11.txt", sep = ""))
+}
+
 
 # length(true.mns)
 

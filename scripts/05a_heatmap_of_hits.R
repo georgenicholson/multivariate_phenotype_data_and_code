@@ -1,3 +1,8 @@
+##########################################
+# This script generates Figures 2 and 3
+##########################################
+
+Sig_and_R_combined_outputs <- readRDS(file = control$file_Sig_R_comb)
 resimp <- readRDS(file = control$file.resimp)
 n.line.plot <- 500
 resimp$procnam <- phmap[match(resimp$ph, phmap$ph), "procnam"]
@@ -20,13 +25,12 @@ t.eb.pl[cbind(resimp$geno, resimp$ph)] <- resimp$eb.t / resimp$eb.th.final
 justSig <- F
 zth <- 1
 cexax <- .9
-incl <- "truekos"#for(incl in c("negcons", "truekos")[2]){
+incl <- "truekos"
 plot_file_name <- "paper_annotation_heatmaps_figure.jpg"
-
 jpeg(file.path(control$figure_dir, plot_file_name), width = 9, height = 9, units = "in", res = 500)
 par(oma = c(4, 4, 4, 4))
 layout(mat = matrix(c(1, 1, 2, 2, 3, 5, 4, 6), 4, 2), widths = c(.95, .05), heights = rep(.25, 4))
-par(mar = c(2, 12, 2, 1))#, oma = c(4, 1, 4, 1))
+par(mar = c(2, 12, 2, 1))
 for(meth in c("uv", "eb")){
   if(meth == "uv")
     tpl = t.uv.pl
@@ -69,21 +73,25 @@ image(z = t(as.matrix(1:1000)), x = 1, y = seq(-1, 1, len = 1000), col = control
 axis(side = 4, las = 2, cex.axis = cexax, labels = c("< -1.0", -0.5, 0.0, 0.5, "> 1.0"), at = seq(-1, 1, by = .5))
 mtext(side = 4, text = expression(italic(tilde(z))), line = 3, cex = cexax, las = 2)
 dev.off()
-file.copy(from = file.path(control$figure_dir, "paper_annotation_heatmaps_figure.jpg"),
-          to = file.path(control$dropbox_figure_dir, "paper_annotation_heatmaps_figure.jpg"), overwrite = TRUE)
+if (control$output_to_dropbox) {
+  file.copy(from = file.path(control$figure_dir, "paper_annotation_heatmaps_figure.jpg"),
+            to = file.path(control$dropbox_figure_dir, "paper_annotation_heatmaps_figure.jpg"), overwrite = TRUE)
+} else {
+  file.rename(from = file.path(control$figure_dir, "paper_annotation_heatmaps_figure.jpg"), 
+              to = file.path(control$figure_dir, "Figure_2.jpg"))
+}
 
 ##########################################################
 #Plot Sig and R on same plot
-Sig.mn <- compl[[control$mv_meth_nam_use]]$Sig.comb
-R.mn <- compl[[control$mv_meth_nam_use]]$R.comb
+Sig.mn <- Sig_and_R_combined_outputs[[control$mv_meth_nam_use]]$Sig.comb
+R.mn <- Sig_and_R_combined_outputs[[control$mv_meth_nam_use]]$R.comb
 SigCormn <- t(t(Sig.mn) / sqrt(diag(Sig.mn))) / sqrt(diag(Sig.mn))
-fnamc <- "paper_correlation_heatmaps_figure.jpg"#paste("estmeth_", estimation.meth, "_EMits_", em.nits, "_Sig_and_R_heatmaps.jpg", sep = "")
+fnamc <- "paper_correlation_heatmaps_figure.jpg"
 jpeg(paste(control$figure_dir, "/", fnamc, sep = ""), width = 12, height = 8, units = "in", res = 500)
 par(mfrow = c(1, 2))
 layout(mat = matrix(c(1, 1, 2, 2, 3, 4), 2, 3), widths = c(.47, .47, .06), heights = c(.25, .75))
 par(oma = c(4, 21, 4, 4))
 zpl <- SigCormn[phen.un, phen.un]
-# SigCormn <- t(t(Sig.mn) / sqrt(diag(Sig.mn))) / sqrt(diag(Sig.mn))
 for(plty in c("Sig", "R")){
   if(plty == "Sig"){
     zpl <- SigCormn[Data_all$impc$phord, rev(Data_all$impc$phord)]
@@ -95,7 +103,6 @@ for(plty in c("Sig", "R")){
   }
   cexax <- 1.15
   image(x = 1:nrow(zpl), y = 1:ncol(zpl), z = zpl, zlim = c(-1, 1), col = control$heat_col_palette, xlab = "", ylab = "", xaxt = "n", yaxt = "n")
-  str(zpl)
   for(sidec in 1:2){
     if(sidec == 2)
       procv <- resimp[match(colnames(zpl), resimp$ph), "procnam"]
@@ -125,5 +132,15 @@ par(mar = c(1, 1, 1, 1), xpd = F)
 image(z = t(as.matrix(1:1000)), x = 1, y = seq(-1, 1, len = 1000), col = control$heat_col_palette, xaxt = "n", yaxt = "n", ylab = "t")
 axis(side = 4, las = 2, cex.axis = cexax)
 dev.off()
-file.copy(from = paste(control$figure_dir, "/", fnamc, sep = ""),
+if (control$output_to_dropbox) {
+  file.copy(from = paste(control$figure_dir, "/", fnamc, sep = ""),
           to = paste(control$dropbox_figure_dir, "/", fnamc, sep = ""), overwrite = TRUE)
+} else {
+  file.rename(from = paste(control$figure_dir, "/", fnamc, sep = ""), 
+              to = file.path(control$figure_dir, "Figure_3.jpg"))
+}
+
+
+
+
+
