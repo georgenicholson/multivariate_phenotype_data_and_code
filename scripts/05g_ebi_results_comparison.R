@@ -113,8 +113,6 @@ p.ebi <- resimp.disagree$prior.p.pos^as.numeric(resimp.disagree$ebi.signsig == 1
   (1 - resimp.disagree$prior.p.pos)^as.numeric(resimp.disagree$ebi.signsig == -1)
 table(p.eb > p.ebi)
 
-plot(p.eb, p.ebi, xlim = c(0, 1))
-abline(v = .5)
 bf.eb.ebi <- prod(p.eb) / prod(p.ebi)
 save.num <- c("bf.eb.ebi")
 for(numc in save.num)
@@ -127,8 +125,6 @@ save.num4 <- c("post.eb.mod.prob")
 for(numc in save.num4)
   write.table(prettyNum(round(eval(as.name(numc)), 4), big.mark = ","), file = paste(dir.save, "/", numc, ".txt", sep = ""),
               col.names = F, row.names = F, quote = F)
-
-install.packages("plotrix")
 
 res_ebi <- resimp[!is.na(resimp$uv.perm.signsig), 
                   c("ebi.signsig", "uv.perm.signsig", mv_signsig_name)]
@@ -199,11 +195,9 @@ d13 <- d13seq[which.min(abs(area(r1, r3, d13seq) - p13))]
 d23seq <- seq(abs(r2 - r3), r2 + r3, by = .0001)
 d23 <- d23seq[which.min(abs(area(r2, r3, d23seq) - p23))]
 
-plot(abs(area(r2, r3, d23seq) - p23))
 rr1 <- 1  
 rr2 <- 2  
 dseq <- seq(abs(rr1 - rr2), rr1 + rr2, by = .0001)
-plot(dseq, area(rr1, rr2, dseq))
 
 p_obs <- n_obs / n_tot
 x3 <- .5

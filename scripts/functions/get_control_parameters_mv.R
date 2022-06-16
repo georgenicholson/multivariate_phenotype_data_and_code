@@ -98,6 +98,7 @@ get_control_parameters_mv <- function(control = list()) {
   defaults$file_cv_lik_matrices <- paste0(defaults$global_res_dir, "/cv_lik_matrices.RDS")
   defaults$file_Sig_R_comb <- paste0(defaults$global_res_dir, "/Sig_R_comb_outputs.RDS")
   defaults$file_subsampling_outputs <- paste0(defaults$global_res_dir, "/subsampling_outputs.RDS")
+  defaults$file_ref_lines_raw_outputs <- paste0(defaults$global_res_dir, "/reference_lines_raw_outputs.RDS")
   defaults$file_raw_factor_results_parallel_output <- paste0(defaults$global_res_dir, "/raw_factor_results_parallel.RDS")
   defaults$Data_all_file <- file.path(defaults$data_dir, "Data_all.RDS") 
   defaults$file.go.results <- paste0(defaults$global_res_dir, "/global_go_results.RData")

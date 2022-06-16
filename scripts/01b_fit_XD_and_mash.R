@@ -163,7 +163,7 @@ if(Meth == "mash"){
   mash.pimat.t.use <- mash.pimat.t[, , drop = F]
   mash.pimat.t.use <- mash.pimat.t.use / sum(mash.pimat.t.use)
   resl.store <- resl[names(resl) != "uv"]
-  for(dat.type in dat.typev){#dat.type <- "raw"#
+  for(dat.type in dat.typev){
     out.post.mix.mash <- em.update.function(Y.em = Y.eml[[dat.type]][sams_for_model_testing, phens_to_use], 
                                             S.em = S.eml[[dat.type]][sams_for_model_testing, phens_to_use],
                                             Sigl = mash.Sigl, R = R.init,

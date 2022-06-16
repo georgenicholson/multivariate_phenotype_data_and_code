@@ -208,8 +208,6 @@ line.uv.greater.n <- sum(line.n.eb.non < line.n.uv)
 line.uv.equal.n <- sum(line.n.eb.non == line.n.uv)
 line.average.increase.n <- mean(line.n.eb.non - line.n.uv)
 
-plot(n.uv, n.eb.non / n.uv)
-
 save.num <- c("phen.mv.greater.n", "phen.uv.greater.n", "phen.uv.equal.n",
               "line.mv.greater.n", "line.uv.greater.n", "line.uv.equal.n")
 for (numc in save.num)
