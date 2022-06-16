@@ -48,7 +48,7 @@ Data_all <- readRDS("data/Data_all.RDS")
 
 ## Generate figures from paper
 
-To generate the Figures and Tables in the paper, unzip the analysis outputs file "output.zip" attached to our GitHub release. Unzip it directly in the root of the repository folder, creating a folder structure "output/global_results/" containing the precomputed output files. Check the files are there:
+To generate the Figures and Tables in the paper, download and unzip the analysis outputs file "output.zip", an asset in our [GitHub release](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/tag/v1.1). Unzip it directly in the root of the repository folder, creating a folder structure "output/global_results/" containing the precomputed output files. Check the files are there:
 ```
 list.files("output/global_results")
 ```

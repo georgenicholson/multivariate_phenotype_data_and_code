@@ -94,7 +94,7 @@ for(i in 1:(nfac - 1)){
 }
 
 n.fac.pr.test <- .5 * nfac * (nfac - 1)
-orqmat <- p.adjust(orpmat[lower.tri(orpmat)], method = "BY")# * n.fac.pr.test
+orqmat <- p.adjust(orpmat[lower.tri(orpmat)], method = "BY")
 fac.sig.th <- .05
 n.fac.pr.sig <- sum(orqmat < fac.sig.th, na.rm = T)
 

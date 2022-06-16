@@ -11,7 +11,6 @@ phnam1use <-  Data_all$impc$figure_1_data$ph_names[1]
 phnam2use <-  Data_all$impc$figure_1_data$ph_names[2]
 
 resimp <- readRDS(file = control$file.resimp)
-str(resimp)
 ph_use <- Data_all$impc$phmap[match(c(phnam1use, phnam2use), Data_all$impc$phmap$nam), "ph"]
 
 mean(abs(resl.comp$impc_MVphen_nSig_1_K_20$mn) < abs(resl.comp$uv$mn), na.rm = T)

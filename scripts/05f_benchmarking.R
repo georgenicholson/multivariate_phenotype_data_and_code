@@ -70,7 +70,6 @@ tail(restaball)
 
 jpeg(filename = paste0(control$dropbox_figure_dir, "/rand_init_cv_lik.jpg"), width = 6, height = 6, 
      units = "in", res = 500)
-# pdf(file = paste0(control$dropbox_figure_dir, "/rand_init_cv_lik.pdf"), 6, 6)
 par(oma = c(1, 1, 1, 1), mar = c(4, 4, 4, 4))
 plot(llmean.splitmat.true[, "impc_MVphen_nSig_1_K_20"], llmean.splitmat.true[, "impc_MVphen_rand_nSig_1_K_20"],
      main = "Cross-validated log likelihood comparison",
@@ -139,7 +138,6 @@ tabout.test <- print(xList,
 tabout.test.with.header <- gsub("\n\\\\hline\nMe", 
                                 paste0("\n\\\\hline\n& & &\\\\multicolumn\\{2\\}\\{c\\}\\{Hit rate  in \\\\% when data are\\}&",
                                        "\\\\multicolumn\\{3\\}\\{|c\\}\\{Estimated error rate in \\\\% (95\\\\% CI) \\}\\\\\\\\\n",
-                                       # "\\\\cline\\{3\\-4\\}\\\\cline\\{5\\-7\\}\\\nMe"), tabout.test)
                                        "\\\nMe"), tabout.test)
 cat(tabout.test.with.header, file = paste(control$dropbox_text_numbers_dir, "/hitrates_", err.data.type, ".txt", sep = ""))
 if (!control$output_to_dropbox) {
@@ -147,7 +145,7 @@ if (!control$output_to_dropbox) {
 }
 
 
-colkeep.lik <- c("Method", "S", "K", "cvlik.ci")#, "hit.nonimp.ci", "hit.imp.ci")
+colkeep.lik <- c("Method", "S", "K", "cvlik.ci")
 restaball.lik <- unique(restaball[, colkeep.lik])
 restaball.lik <- restaball.lik[restaball.lik$Method != "UV", ]
 colnames(restaball.lik) <- colkeepmap[match(colkeep.lik, colkeepmap$keep), "keep.as"]
@@ -171,12 +169,6 @@ if (!control$output_to_dropbox) {
 
 
 
-# table_for_order$Method[table_for_order$Method == methnam_out] <- methnam_code
-# nam_order <- paste0("eqtl_", table_for_order$Method, "_nSig_", table_for_order$S)
-# restaball.lik
-# dput(names(true.mns))
-
-
 res_to_fill <- restaball.lik
 Data <- "eqtl"
 model_ordered <- c("eqtl_XD_nSig_1", "eqtl_XD_nSig_2", "eqtl_mash_nSig_1", "eqtl_MVphen_nSig_1_K_15", "eqtl_MVphen_nSig_1_K_20", 
@@ -184,7 +176,6 @@ model_ordered <- c("eqtl_XD_nSig_1", "eqtl_XD_nSig_2", "eqtl_mash_nSig_1", "eqtl
                    "eqtl_MVphen_nSig_2_K_20", "eqtl_MVphen_nSig_2_K_30", "eqtl_MVphen_nSig_2_K_40") 
 llmean.splitmat.true <- sapply(cvlik_matrices[grepl(Data, names(cvlik_matrices))], function(x) colMeans(x$llmat.raw[, 1:10], na.rm = T))
 llmean.splitmat.true <- llmean.splitmat.true[, model_ordered]
-# llmean.splitmat.true <- llmean.splitmat.true[, order(match(colnames(llmean.splitmat.true), c("UV", "XD", "mash", methnam_code)))]
 true.mns <- colMeans(llmean.splitmat.true, na.rm = T)
 true.ses <- apply(llmean.splitmat.true, 2, function(v) sd(v, na.rm = T) / sqrt(length(v)))
 true_mn_with_cis <- true.mns
@@ -208,8 +199,4 @@ if (!control$output_to_dropbox) {
   cat(tabout_eqtl, file = paste(control$table_dir, "/Table_11.txt", sep = ""))
 }
 
-
-# length(true.mns)
-
-# }
 

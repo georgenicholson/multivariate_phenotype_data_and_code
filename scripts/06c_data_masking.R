@@ -5,11 +5,6 @@
 resimp <- readRDS(file = control$file.resimp)
 resimp <- resimp[!grepl("fac", resimp$ph), ]
 
-# resimp$eb.mn.loo.proc <- compl[[control$mv_meth_nam_use]]$loocv.mn.comb[cbind(resimp$geno, resimp$ph)]
-# resimp$eb.sd.loo.proc <- compl[[control$mv_meth_nam_use]]$loocv.sd.comb[cbind(resimp$geno, resimp$ph)]
-# resimp$eb.t.loo.proc <- resimp$eb.mn.loo.proc / resimp$eb.sd.loo.proc
-
-
 ######################################
 #Numbers for text
 tab.loo.uv = table(c(sign(resimp$uv.t) * (abs(resimp$uv.t) > resimp$uv.th.final)),
@@ -58,7 +53,6 @@ for(compc in c("uv", "eb")[1]){
       legend(x = atv[i], y = atv[j], legend = labc, text.col = 1, bg = adjustcolor("white", .85), xjust = .5, cex = legcex)
     }
   }
-  # mtext(side = 3, line = 2, at = -limn, text = ifelse(compc == "uv", "(a)", "(b)"), cex = 1.3)
   if(compc == "uv")
     fdr.res <- fdr.est.tab(tab.loo.uv)
   if(compc == "eb")

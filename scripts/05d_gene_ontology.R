@@ -85,9 +85,9 @@ sym2eg[which(sym2eg$chr == "Y"), "chr"] <- 21
 sym2eg$chr <- as.integer(sym2eg$chr)
 sym2eg <- sym2eg[rowSums(is.na(sym2eg)) == 0, ]
 genfacl <- list()
-for(restype in c("uv", "mv", "mv.bigeff", "uv.bigeff", "f")[1:5]){#restype <- "uv"#
+for(restype in c("uv", "mv", "mv.bigeff", "uv.bigeff", "f")[1:5]){
   genfacl[[restype]] <- list()
-  for(dirc in dirv){#dirc <- dirv[1]#
+  for(dirc in dirv){
     genfacl[[dirc]] <- list()
     if(restype %in% c("uv", "mv", "mv.bigeff", "uv.bigeff")){
       phvc <- ph.use
@@ -96,7 +96,7 @@ for(restype in c("uv", "mv", "mv.bigeff", "uv.bigeff", "f")[1:5]){#restype <- "u
     if(restype == "f") {
       phvc <- facnam
     }
-    for(phc in phvc){#phc <- ph.use[1]#
+    for(phc in phvc){
       impc.idc <- unique(sapply(strsplit(rownames(sigl[[restype]][[dirc]])[which(sigl[[restype]][[dirc]][, phc])], spl = "_"), 
                                 function(v) v[1]))
       impc.idc.meas <- unique(sapply(strsplit(rownames(sigl[[restype]][[dirc]])[which(!is.na(sigl[[restype]][[dirc]][, phc]))], spl = "_"), 
@@ -252,8 +252,6 @@ for (pair_num in 1:length(co_enrich)) {
 gonamv <- unlist(lapply(outl, function(x) c(x$uv$node_name, x$mv$node_name, x$mv.bigeff$node_name, x$uv.bigeff$node_name)))
 goidv <- unlist(lapply(outl, function(x) c(x$uv$node_id, x$mv$node_id, x$mv.bigeff$node_id, x$uv.bigeff$node_id)))
 gonamidmap <- unique(data.frame(nam = gonamv, id = goidv))
-# go.gene.dat <- GOfuncR::get_anno_genes(go_ids = goidv, database = 'Mus.musculus', genes = NULL, annotations = NULL,
-#                                        term_df = NULL, graph_path_df = NULL, godir = NULL)
 go.gene.dat$entrez <- sym2eg[match(go.gene.dat$gene, sym2eg$symbol), "gene_id"]
 go.gene.dat$go_name <- gonamidmap[match(go.gene.dat$go_id, gonamidmap$id), "nam"]
 
@@ -263,8 +261,8 @@ uniquenams <- unique(go.gene.dat$go_name)
 ngo <- length(uniquenams)
 ph.use.nam <- phmap[match(ph.use, phmap$ph), "nam"]
 uvmat <- uvmat.nup <- uvmat.ndo <- mvmat <- mvmat.nup <- mvmat.ndo <- matrix(NA, ngo, nph, dimnames = list(uniquenams, ph.use.nam))
-for(phc in ph.use.nam){# phc <- ph.use.nam[1]#
-  for(restype in c("mv.bigeff", "uv.bigeff")){# restype <- "mv.bigeff"#
+for(phc in ph.use.nam){
+  for(restype in c("mv.bigeff", "uv.bigeff")){
     gotabc <- outl[[phc]][[restype]]
     if(NROW(gotabc) > 0) {
       for(j in 1:nrow(gotabc)){

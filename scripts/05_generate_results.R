@@ -16,10 +16,10 @@ linemap <- Data_all$impc$linemap
 phmap <- Data_all$impc$phmap
 
 resl.comp <- readRDS(file = control$file.resl.comp)
-# compl <- readRDS(file = control$file.compl)
 objl <- readRDS(file = control$file.objl)
-resll <- readRDS(file = control$file.resll)
+resll <- readRDS(control$file_ref_lines_raw_outputs)
 restabl <- readRDS(file = file.path(control$global_res_dir, paste0("restabl_comb.RDS")))
+
 
 # This script generates Figures 2 and 3
 source("scripts/05a_heatmap_of_hits.R")

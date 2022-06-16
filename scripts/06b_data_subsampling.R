@@ -20,9 +20,7 @@ for(seed in 1:control$n_subsamples_benchmark){
 
 
 seed.largest.kl <- which.max(kl1 + kl2)
-# resl.comp.subset <- list(mn = compl[[subsam_meth_name]]$mnarr[, , seed.largest.kl], 
-#                          sd = compl[[subsam_meth_name]]$sdarr[, , seed.largest.kl], 
-#                          lfsr = compl[[subsam_meth_name]]$lfsrarr[, , seed.largest.kl])
+
 resl.comp.subset <- list(mn = subsampling_outputs[[subsam_meth_name]]$mnarr[, , seed.largest.kl], 
                          sd = subsampling_outputs[[subsam_meth_name]]$sdarr[, , seed.largest.kl], 
                          lfsr = subsampling_outputs[[subsam_meth_name]]$lfsrarr[, , seed.largest.kl])

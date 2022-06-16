@@ -105,7 +105,12 @@ resimp$eb.t.loo.proc <- resimp$eb.mn.loo.proc / resimp$eb.sd.loo.proc
 saveRDS(resimp, file = control$file.resimp)  
 
 
-
+######################################################################
+# Save smaller version of resll for reproducing figures
+resll <- readRDS(file = file.path(control$global_res_dir, paste0("resll_comb.RDS")))
+resll_sub <- list()
+resll_sub$perm <- resll$perm[c("uv", control$mv_meth_nam_use)]
+saveRDS(resll_sub, file = control$file_ref_lines_raw_outputs)
 
 
 
