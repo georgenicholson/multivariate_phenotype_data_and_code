@@ -101,7 +101,7 @@ source("scripts/01_model_fitting_wrapper.R")
 
 ## Post model fitting analyses
 
-To post-model-fitting analyses please run
+To perform the post-model-fitting analyses and generate figures and tables, please run
 ```
 source("scripts/02_collect_results.R")
 source("scripts/03_estimate_global_factors.R")
