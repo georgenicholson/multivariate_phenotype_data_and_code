@@ -1,9 +1,3 @@
-if (!"run_type" %in% ls()) {
-  warning("run_type not specified, setting run_type <- 'demo' by default")
-  ########################################################## 
-  # Choose analysis type (see README)
-  run_type <- c("demo", "main", "benchmark", "test_benchmark")[1]
-}
 
 ##################################################################
 # This section imports arguments from the command line if present
@@ -14,6 +8,19 @@ if("--args" %in% arguments){
                           stringsAsFactors = F)
   for(i in 1:nrow(argnam.in))
     assign(argnam.in$nam[i], eval(call(argnam.in$coersion.fn[i], arguments[grep("--args", arguments) + i])))
+}
+
+if (!all(c("run_type", "scen", "subsamseed") %in% ls())) {
+  stop("All of 'run_type', 'scen', 'subsamseed' must be specified as inputs to 01_model_fitting_wrapper.R. 
+       This can be done via running at the command line with 'run_type', 'scen', 'subsamseed' as arguments in that order, 
+       or by sourcing 01_model_fitting_wrapper.R in an R session with 'run_type', 'scen', 'subsamseed' as objects. See README.md for details")
+}
+
+if (!"run_type" %in% ls()) {
+  warning("run_type not specified, setting run_type <- 'demo' by default")
+  ########################################################## 
+  # Choose analysis type (see README)
+  run_type <- c("demo", "main", "benchmark", "test_benchmark")[1]
 }
 
 library(foreach)
@@ -56,8 +63,8 @@ analysis_table <- create_table_of_analyses(control = control, check_status = F, 
 # Loop through analysis_table
 # NOTE: You will need to parallelise this for the "main" or "benchmark" analyses 
 # as each run is computationally intensive for the full sample size
-for (scen in 1:nrow(analysis_table)) {
-  for (subsamseed in 1:analysis_table$n_subsamples[scen]) {
+# for (scen in 1:nrow(analysis_table)) {
+#   for (subsamseed in 1:analysis_table$n_subsamples[scen]) {
     Data <- analysis_table$Data[scen]
     Meth <- analysis_table$Meth[scen]
     N <- analysis_table$N[scen]
@@ -143,6 +150,6 @@ for (scen in 1:nrow(analysis_table)) {
       source(file = "scripts/01b_fit_XD_and_mash.R")
     }
     print("Done!")
-  }
-}
+#   }
+# }
     
