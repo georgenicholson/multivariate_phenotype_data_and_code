@@ -1,5 +1,4 @@
-
-create_table_of_analyses <- function(control, check_status = F, run_type = c("demo", "main", "benchmark", "test_benchmark")[2]) {
+create_table_of_analyses <- function(control, check_status = F, run_type = c("demo", "main", "benchmark", "test_benchmark")[1]) {
   
   if(run_type == "demo") {
     runtab <- data.frame(N = 100, P = 10, Data = "impc", 
@@ -30,8 +29,6 @@ create_table_of_analyses <- function(control, check_status = F, run_type = c("de
                           n_subsamples = control$n_subsamples_benchmark,
                           stringsAsFactors = F)
     runtab[which(!grepl("MVphen", runtab$Meth)), "MVphen_K"] <- NA
-    
-    
     #############################
     # Filter and tweak runtab
     #############################
@@ -44,32 +41,31 @@ create_table_of_analyses <- function(control, check_status = F, run_type = c("de
     runtab <- runtab[which(!(runtab$Meth == "MVphen_N_500" & (runtab$Data == "eqtl" | runtab$nSig > 1 | runtab$MVphen_K != 20))), ]
     runtab <- runtab[which(!(runtab$Meth == "MVphen_rand" & (runtab$Data == "eqtl" | runtab$MVphen_K != 20))), ]
     runtab <- runtab[which(!(runtab$Meth == "MVphen_rand" & runtab$nSig > 1)), ]
-    
-    ###############################################################
-    #Specify memory requirements for each type of job
-    #################################################################
-    runtab$mem <- 2300
-    runtab[runtab$Data %in% c("impc", "eqtl") & runtab$Meth == "MVphen", "mem"] <- 2000
-    runtab[runtab$Data  == "impc" & runtab$Meth == "mash", "mem"] <- 6000
-    runtab[runtab$Data == "eqtl" & runtab$Meth == "mash", "mem"] <- 4600
-    runtab <- runtab[order(runtab$Data, runtab$Meth, runtab$nSig), ]
-    runtab$rand <- ifelse(grepl("rand", runtab$Meth), T, F)
-    runtab$loocv <- ifelse(runtab$Meth == "MVphen" & runtab$nSig == 1 & runtab$N == 2000 & runtab$MVphen_K == 20, T, F)
-    rownames(runtab) <- 1:nrow(runtab)
-    if (run_type == "test_benchmark") {
-      runtab$n_subsamples <- 2  
-      runtab$N <- 200  
-      runtab$P <- 20
-      runtab$MVphen_K <- 5
-    }
-    runtab <- unique(runtab)
-    
-    # Increased n_subsamples for main analysis
-    runtab[runtab$N == 2000 & runtab$P == 148 & runtab$nSig == 1 & 
-             runtab$Meth == "MVphen" & runtab$MVphen_K == control$nfac, "n_subsamples"] <- control$n_subsamples_main
-    
   }  
-
+  
+  ###############################################################
+  #Specify memory requirements for each type of job
+  #################################################################
+  runtab$mem <- 2300
+  runtab[runtab$Data %in% c("impc", "eqtl") & runtab$Meth == "MVphen", "mem"] <- 2000
+  runtab[runtab$Data  == "impc" & runtab$Meth == "mash", "mem"] <- 6000
+  runtab[runtab$Data == "eqtl" & runtab$Meth == "mash", "mem"] <- 4600
+  runtab <- runtab[order(runtab$Data, runtab$Meth, runtab$nSig), ]
+  rownames(runtab) <- 1:nrow(runtab)
+  if (run_type == "test_benchmark") {
+    runtab$n_subsamples <- 2  
+    runtab$N <- 200  
+    runtab$P <- 20
+    runtab$MVphen_K <- 5
+  }
+  runtab <- unique(runtab)
+  
+  # Increased n_subsamples for main analysis
+  runtab[runtab$N == 2000 & runtab$P == 148 & runtab$nSig == 1 & 
+           runtab$Meth == "MVphen" & runtab$MVphen_K == control$nfac, "n_subsamples"] <- control$n_subsamples_main
+  runtab$rand <- ifelse(grepl("rand", runtab$Meth), T, F)
+  runtab$loocv <- ifelse(runtab$Meth == "MVphen" & runtab$nSig == 1 & runtab$N == 2000 & runtab$MVphen_K == 20, T, F)
+  
   runtab[, c("file_core_name")] <- NA
   for (scen in 1:nrow(runtab)) {
     for (j in 1:ncol(runtab)) {

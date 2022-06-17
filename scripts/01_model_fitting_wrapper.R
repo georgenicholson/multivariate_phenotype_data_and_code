@@ -142,6 +142,7 @@ for (scen in 1:nrow(analysis_table)) {
     if(Meth %in% c("mash", "XD")){
       source(file = "scripts/01b_fit_XD_and_mash.R")
     }
+    print("Done!")
   }
 }
     

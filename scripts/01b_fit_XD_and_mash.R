@@ -63,6 +63,7 @@ if(Meth == "XD"){
   }
   Sigl.XD <- lapply(XD_result$Sigl.XD, function(M) M[phens_to_use, phens_to_use])
   omegaseq.XD <- 1
+  print("Calculating posterior means")
   resl.store <- list()
   for(dat.type in dat.typev){
     out.post.mix.XD <- em.update.function(Y.em = Y.eml[[dat.type]][sams_for_model_testing, phens_to_use], 
@@ -89,9 +90,10 @@ if(Meth == "XD"){
 ##############################################
 # Run MASH
 if(Meth == "mash"){
+  print("Running mash")
   replace.XD <- F
   if(!file.exists(file_list$XD.output.file.namc) | replace.XD){
-    print("Running Extreme Deconvolution")
+    print("Running Extreme Deconvolution for mash")
     mashdata.XD <- mashdata.big.effects.for.XD
     Ul.XD.init <- Sigl.init.bigeff.mash
     XD.out <- mashr:::bovy_wrapper(data = mashdata.XD, Ulist_init = Ul.XD.init, tol = control$XD_conv_tol_for_mash)
@@ -100,7 +102,7 @@ if(Meth == "mash"){
     XD_result <- list(XD.out = XD.out, mashdata.XD = mashdata.XD, Sigl.XD = Sigl.XD, pimat.XD = pimat.XD)
     saveRDS(XD_result, file = file_list$XD.output.file.namc)
   } else {
-    print("Loading Extreme Deconvolution results")
+    print("Loading Extreme Deconvolution results for mash")
     print(file_list$XD.output.file.namc)
     print(Data)
     XD_result <- readRDS(file = file_list$XD.output.file.namc)
@@ -162,6 +164,7 @@ if(Meth == "mash"){
   mash.pimat.t[1, 1] <- mash.piv[1]
   mash.pimat.t.use <- mash.pimat.t[, , drop = F]
   mash.pimat.t.use <- mash.pimat.t.use / sum(mash.pimat.t.use)
+  print("Calculating posterior means")
   resl.store <- resl[names(resl) != "uv"]
   for(dat.type in dat.typev){
     out.post.mix.mash <- em.update.function(Y.em = Y.eml[[dat.type]][sams_for_model_testing, phens_to_use], 
