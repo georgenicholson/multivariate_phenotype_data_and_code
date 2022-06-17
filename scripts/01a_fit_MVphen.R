@@ -1,6 +1,7 @@
 
 force_rerun_em <- FALSE
 if(force_rerun_em | !file.exists(file_list$emout.file.namc)){
+  print("Running ComposeMV")
   print("Running EM algorithm")
   emout.mix <- EM_algo_mixture_multi_Sig(control = control, 
                                          Y.em = Y_raw[sams_for_model_training, phens_to_use], 
