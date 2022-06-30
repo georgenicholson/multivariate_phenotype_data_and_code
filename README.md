@@ -15,7 +15,7 @@ Choose the local directory where you want the repository cloned (let's call this
 
 Linux:
 ```
-MV_HOME=“/path/to/your/local/git/repositories/”
+MV_HOME="/path/to/your/local/git/repositories/"
 cd $MV_HOME
 ```
 Windows:
