@@ -45,6 +45,7 @@ Windows users, please download the results in [output.zip](https://github.com/ge
 ### Pull the Docker image
 
 Pull the Docker image from [dockerhub](https://hub.docker.com/) which has been created from the Dockerfile in the root folder of the git repository
+
 ```
 docker pull georgenicholson/multivariate_phenotype_data_and_code:v2.0
 ```
