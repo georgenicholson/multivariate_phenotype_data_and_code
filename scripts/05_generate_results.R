@@ -7,7 +7,15 @@ for (file_curr in fns_to_source) {
 
 ##########################################
 # control contains parameter settings
-control <- get_control_parameters_mv()
+control <- get_control_parameters_mv(output_to_dropbox = F)
+
+##########################################
+# Create directory structure
+dirs_to_create <- c("output_dir", "methods_comp_dir", "global_res_dir", "data_dir", "train_test_samples_dir",
+                    "dropbox_figure_dir", "dropbox_text_numbers_dir", "dropbox_table_dir")
+for (dirc in c(control[dirs_to_create])) {
+  dir.create(dirc, recursive = TRUE, showWarnings = FALSE)
+}
 
 ###################################
 # Load data

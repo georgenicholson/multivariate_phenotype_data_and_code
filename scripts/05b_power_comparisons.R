@@ -318,11 +318,11 @@ for (procc in procun){
   powtab[procc, "x.eb.imp"] <- length(unique(resc.imp[which(resc.imp$eb.signsig != 0), "geno"]))
   powtab[procc, "n.eb.imp"] <- length(unique(resc.imp$geno))
 }
-uv.ci <- binconf(x = powtab$x.uv, n = powtab$n.uv)
+uv.ci <- Hmisc::binconf(x = powtab$x.uv, n = powtab$n.uv)
 powtab[, c("uv.est", "uv.l", "uv.u")] <- uv.ci
-eb.non.ci <- binconf(x = powtab$x.eb.non, n = powtab$n.eb.non)
+eb.non.ci <- Hmisc::binconf(x = powtab$x.eb.non, n = powtab$n.eb.non)
 powtab[, c("eb.non.est", "eb.non.l", "eb.non.u")] <- eb.non.ci
-eb.imp.ci <- binconf(x = powtab$x.eb.imp, n = powtab$n.eb.imp)
+eb.imp.ci <- Hmisc::binconf(x = powtab$x.eb.imp, n = powtab$n.eb.imp)
 powtab[, c("eb.imp.est", "eb.imp.l", "eb.imp.u")] <- eb.imp.ci
 powtab <- powtab[order(powtab$uv.est), ]
 ydum <- powtab[, c("uv.est", "uv.l", "uv.u", "eb.non.est", "eb.non.l", "eb.non.u", 
@@ -394,11 +394,11 @@ for (phenc in phenun) {
   powtab.ph[phenc, "n.eb.imp"] <- length(unique(resc.imp$geno))
   miss_df[match(phenc, miss_df$ph), "missing_prop"] <- nrow(resc) / (nrow(resc) + nrow(resc.imp))
 }
-uv.ci <- binconf(x = powtab.ph$x.uv, n = powtab.ph$n.uv)
+uv.ci <- Hmisc::binconf(x = powtab.ph$x.uv, n = powtab.ph$n.uv)
 powtab.ph[, c("uv.est", "uv.l", "uv.u")] <- uv.ci
-eb.non.ci <- binconf(x = powtab.ph$x.eb.non, n = powtab.ph$n.eb.non)
+eb.non.ci <- Hmisc::binconf(x = powtab.ph$x.eb.non, n = powtab.ph$n.eb.non)
 powtab.ph[, c("eb.non.est", "eb.non.l", "eb.non.u")] <- eb.non.ci
-eb.imp.ci <- binconf(x = powtab.ph$x.eb.imp, n = powtab.ph$n.eb.imp)
+eb.imp.ci <- Hmisc::binconf(x = powtab.ph$x.eb.imp, n = powtab.ph$n.eb.imp)
 powtab.ph[, c("eb.imp.est", "eb.imp.l", "eb.imp.u")] <- eb.imp.ci
 powtab.ph <- powtab.ph[match(Data_all$impc$phord, powtab.ph$ph), ]
 powtab.ph$procnam <- Data_all$impc$phmap[match(powtab.ph$ph, Data_all$impc$phmap$ph), "procnam"]

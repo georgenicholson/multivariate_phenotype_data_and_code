@@ -3,17 +3,17 @@
 # This section imports arguments from the command line if present
 arguments <- commandArgs()
 if("--args" %in% arguments){
-  argnam.in <- data.frame(nam = c("run_type", "scen", "subsamseed"), 
+  argnam.in <- data.frame(nam = c("run_type", "analysis_table_row", "subsamseed"), 
                           coersion.fn = c("as.character", "as.numeric", "as.numeric"), 
                           stringsAsFactors = F)
   for(i in 1:nrow(argnam.in))
     assign(argnam.in$nam[i], eval(call(argnam.in$coersion.fn[i], arguments[grep("--args", arguments) + i])))
 }
 
-if (!all(c("run_type", "scen", "subsamseed") %in% ls())) {
-  stop("All of 'run_type', 'scen', 'subsamseed' must be specified as inputs to 01_model_fitting_wrapper.R. 
-       This can be done via running at the command line with 'run_type', 'scen', 'subsamseed' as arguments in that order, 
-       or by sourcing 01_model_fitting_wrapper.R in an R session with 'run_type', 'scen', 'subsamseed' as objects. See README.md for details")
+if (!all(c("run_type", "analysis_table_row", "subsamseed") %in% ls())) {
+  stop("All of 'run_type', 'analysis_table_row', 'subsamseed' must be specified as inputs to 01_model_fitting_wrapper.R. 
+       This can be done via running at the command line with 'run_type', 'analysis_table_row', 'subsamseed' as arguments in that order, 
+       or by sourcing 01_model_fitting_wrapper.R in an R session with 'run_type', 'analysis_table_row', 'subsamseed' as objects. See README.md for details")
 }
 
 if (!"run_type" %in% ls()) {
@@ -42,14 +42,6 @@ dirs_to_create <- c("output_dir", "methods_comp_dir", "global_res_dir", "data_di
 for (dirc in c(control[dirs_to_create])) {
   dir.create(dirc, recursive = TRUE, showWarnings = FALSE)
 }
-print(getwd())
-print(paste("data dir exits:", dir.exists("data")))
-
-##########################################
-# Download data
-if (!file.exists(control$Data_all_file)) {
-  source("scripts/00_download_data.R")
-}
 
 ##########################################
 # Load data
@@ -63,21 +55,21 @@ analysis_table <- create_table_of_analyses(control = control, check_status = F, 
 # Loop through analysis_table
 # NOTE: You will need to parallelise this for the "main" or "benchmark" analyses 
 # as each run is computationally intensive for the full sample size
-# for (scen in 1:nrow(analysis_table)) {
-#   for (subsamseed in 1:analysis_table$n_subsamples[scen]) {
-    Data <- analysis_table$Data[scen]
-    Meth <- analysis_table$Meth[scen]
-    N <- analysis_table$N[scen]
-    P <- analysis_table$P[scen]
-    nSig <- analysis_table$nSig[scen]
-    Data <- analysis_table$Data[scen]
-    MVphen_K <- analysis_table$MVphen_K[scen]
-    n_subsamples <- analysis_table$n_subsamples[scen]
-    run_masking <- analysis_table$loocv[scen]
+# for (analysis_table_row in 1:nrow(analysis_table)) {
+#   for (subsamseed in 1:analysis_table$n_subsamples[analysis_table_row]) {
+    Data <- analysis_table$Data[analysis_table_row]
+    Meth <- analysis_table$Meth[analysis_table_row]
+    N <- analysis_table$N[analysis_table_row]
+    P <- analysis_table$P[analysis_table_row]
+    nSig <- analysis_table$nSig[analysis_table_row]
+    Data <- analysis_table$Data[analysis_table_row]
+    MVphen_K <- analysis_table$MVphen_K[analysis_table_row]
+    n_subsamples <- analysis_table$n_subsamples[analysis_table_row]
+    run_masking <- analysis_table$loocv[analysis_table_row]
     XDmeth <- Meth
     
     file_list <- get_file_list(control = control, 
-                               file_core_name = analysis_table[scen, "file_core_name"], 
+                               file_core_name = analysis_table[analysis_table_row, "file_core_name"], 
                                subsamseed = subsamseed)
     
     Y_raw <- Data_all[[Data]]$Y_raw

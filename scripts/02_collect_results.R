@@ -1,7 +1,4 @@
-if (!"run_type" %in% ls()) {
-  stop("run_type not specified, please specify as one of 'demo', 'main', 'benchmark'")
-}
-
+run_type <- "benchmark"
 ##########################################
 # Source function files
 fns_to_source <- list.files("scripts/functions", full.names = TRUE)
@@ -26,9 +23,9 @@ resl.comp <- compl <- Sigll <- Ksigl <- pimatl <- Sighatl <- Rl <- omegaseql <- 
 resl.comp$uv <- list(mn = Data_all$impc$Y_raw[Data_all$impc$sam_names, Data_all$impc$meas_names], 
                      sd = Data_all$impc$S_raw[Data_all$impc$sam_names, Data_all$impc$meas_names])
 
-for (scen in 1:nrow(analysis_table)) {
+for (analysis_table_row in 1:nrow(analysis_table)) {
   for (var_name in c("N", "P", "Data", "Meth", "nSig", "MVphen_K", "n_subsamples", "file_core_name")) {
-    assign(var_name, analysis_table[scen, var_name])
+    assign(var_name, analysis_table[analysis_table_row, var_name])
   }
   sam_names <- Data_all[[Data]]$sam_names
   N_all <- Data_all[[Data]]$N_all
@@ -55,9 +52,11 @@ for (scen in 1:nrow(analysis_table)) {
   compl[[namc]] <- shared.formatl
   objl[[namc]] <- list()
   pimatl[[namc]] <- Ksigl[[namc]] <- Sigll[[namc]] <- Sighatl[[namc]] <- Rl[[namc]] <- omegaseql[[namc]] <- samll[[namc]] <- list()
+  analysis_successfully_loaded <- TRUE
+  missing_subsamseeds <- c()
   for (subsamseed in 1:n_subsamples) {
     objl[[namc]][[subsamseed]] <- list()
-    file_list <- get_file_list(control = control, file_core_name = analysis_table[scen, "file_core_name"], subsamseed = subsamseed)
+    file_list <- get_file_list(control = control, file_core_name = analysis_table[analysis_table_row, "file_core_name"], subsamseed = subsamseed)
     ###################################
     # Assign samples
     for (var_assign_subsample in c("sams_for_lik_cross_val", 
@@ -95,7 +94,9 @@ for (scen in 1:nrow(analysis_table)) {
         fac.loaded <- TRUE
       }
       if (!emloaded | !resloaded) {
-        warning(paste0(namc, " subsamseed ", subsamseed, " not loaded"))
+        # warning(paste0(namc, " subsamseed ", subsamseed, " not loaded"))
+        analysis_successfully_loaded <- FALSE
+        missing_subsamseeds <- c(missing_subsamseeds, subsamseed)
       }
       if (namc == control$mv_meth_nam_use) {
         if (loocv.loaded) {
@@ -122,7 +123,9 @@ for (scen in 1:nrow(analysis_table)) {
         } 
       }
       if (!mash_or_XD_loaded) {
-        warning(paste0(file_to_load, " not loaded"))
+        # warning(paste0(file_to_load, " not loaded"))
+        analysis_successfully_loaded <- FALSE
+        missing_subsamseeds <- c(missing_subsamseeds, subsamseed)
       }
     }
     if (!is.null(res.store)) {
@@ -145,43 +148,48 @@ for (scen in 1:nrow(analysis_table)) {
     }
   }
   
-  ########################################################
-  # Calculate combined Sig and R
-  suppressWarnings(lmat.norm <- exp(compl[[namc]]$llmat - apply(compl[[namc]]$llmat, 1, function(v) max(v, na.rm = T))))
-  pmix <- compl[[namc]]$pmix <- lmat.norm / rowSums(lmat.norm, na.rm = T)
-  Sigmix.p <- colSums(pmix, na.rm = T) / sum(pmix, na.rm = T)
-  compl[[namc]]$Sig.comb <- compl[[namc]]$R.comb <- 0
-  for(subsamseed in 1:n_subsamples){
-    if (Sigmix.p[subsamseed] > 0) {
-      compl[[namc]]$Sig.comb <- compl[[namc]]$Sig.comb + Sighatl[[namc]][[subsamseed]][meas_names, meas_names] * Sigmix.p[subsamseed]
-      compl[[namc]]$R.comb <- compl[[namc]]$R.comb + Rl[[namc]][[subsamseed]][meas_names, meas_names] * Sigmix.p[subsamseed]
+  if (analysis_successfully_loaded) {
+    ########################################################
+    # Calculate combined Sig and R
+    suppressWarnings(lmat.norm <- exp(compl[[namc]]$llmat - apply(compl[[namc]]$llmat, 1, function(v) max(v, na.rm = T))))
+    pmix <- compl[[namc]]$pmix <- lmat.norm / rowSums(lmat.norm, na.rm = T)
+    Sigmix.p <- colSums(pmix, na.rm = T) / sum(pmix, na.rm = T)
+    compl[[namc]]$Sig.comb <- compl[[namc]]$R.comb <- 0
+    for(subsamseed in 1:n_subsamples){
+      if (Sigmix.p[subsamseed] > 0) {
+        compl[[namc]]$Sig.comb <- compl[[namc]]$Sig.comb + Sighatl[[namc]][[subsamseed]][meas_names, meas_names] * Sigmix.p[subsamseed]
+        compl[[namc]]$R.comb <- compl[[namc]]$R.comb + Rl[[namc]][[subsamseed]][meas_names, meas_names] * Sigmix.p[subsamseed]
+      }
     }
+    resl.comp[[namc]]$Sig.comb <- compl[[namc]]$Sig.comb
+    resl.comp[[namc]]$Sigcor.comb <- t(resl.comp[[namc]]$Sig.comb / sqrt(diag(resl.comp[[namc]]$Sig.comb))) / sqrt(diag(resl.comp[[namc]]$Sig.comb))
+    eigc <- eigen(resl.comp[[namc]]$Sigcor.comb)
+    resl.comp[[namc]]$facs.varimax <- varimax(eigc$vectors[, 1:MVphen_K])$loadings
+    resl.comp[[namc]]$facs.promax <- promax(eigc$vectors[, 1:MVphen_K])$loadings
+    dimnames(resl.comp[[namc]]$facs.varimax) <- dimnames(resl.comp[[namc]]$facs.promax) <- list(meas_names, facnam)
+    wt.mnarr <- apply(sweep(compl[[namc]]$mnarr, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
+    wt.varr <- apply(sweep(compl[[namc]]$sdarr^2, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
+    wt.mnsqarr <- apply(sweep(compl[[namc]]$mnarr^2, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
+    wt.lfsrarr <- apply(sweep(compl[[namc]]$lfsrarr, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
+    compl[[namc]]$mn.comb <- wt.mnarr
+    compl[[namc]]$sd.comb <- sqrt(wt.varr + wt.mnsqarr - wt.mnarr^2)
+    compl[[namc]]$lfsr.comb <- wt.lfsrarr
+    if(Meth == "MVphen" & nSig == 1 & Data == "impc"){
+      loocv.wt.mnarr <- apply(sweep(compl[[namc]]$loocv.mnarr, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
+      loocv.wt.varr <- apply(sweep(compl[[namc]]$loocv.sdarr^2, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
+      loocv.wt.mnsqarr <- apply(sweep(compl[[namc]]$loocv.mnarr^2, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
+      compl[[namc]]$loocv.mn.comb <- loocv.wt.mnarr
+      compl[[namc]]$loocv.sd.comb <- sqrt(loocv.wt.varr + loocv.wt.mnsqarr - loocv.wt.mnarr^2)
+    }
+    resl.comp[[namc]] <- c(resl.comp[[namc]], list(mn = compl[[namc]]$mn.comb[sam_names, meas_names], 
+                                                   sd = compl[[namc]]$sd.comb[sam_names, meas_names], 
+                                                   loocv.mn = compl[[namc]]$loocv.mn.comb[sam_names, meas_names], 
+                                                   loocv.sd = compl[[namc]]$loocv.sd.comb[sam_names, meas_names],
+                                                   lfsr = compl[[namc]]$lfsr.comb[sam_names, meas_names]))
+  } else {
+    warning(paste0("Analysis row ", analysis_table_row, " not loaded; missing subsamseeds ", 
+                   paste(missing_subsamseeds, collapse = ",")))
   }
-  resl.comp[[namc]]$Sig.comb <- compl[[namc]]$Sig.comb
-  resl.comp[[namc]]$Sigcor.comb <- t(resl.comp[[namc]]$Sig.comb / sqrt(diag(resl.comp[[namc]]$Sig.comb))) / sqrt(diag(resl.comp[[namc]]$Sig.comb))
-  eigc <- eigen(resl.comp[[namc]]$Sigcor.comb)
-  resl.comp[[namc]]$facs.varimax <- varimax(eigc$vectors[, 1:MVphen_K])$loadings
-  resl.comp[[namc]]$facs.promax <- promax(eigc$vectors[, 1:MVphen_K])$loadings
-  dimnames(resl.comp[[namc]]$facs.varimax) <- dimnames(resl.comp[[namc]]$facs.promax) <- list(meas_names, facnam)
-  wt.mnarr <- apply(sweep(compl[[namc]]$mnarr, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
-  wt.varr <- apply(sweep(compl[[namc]]$sdarr^2, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
-  wt.mnsqarr <- apply(sweep(compl[[namc]]$mnarr^2, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
-  wt.lfsrarr <- apply(sweep(compl[[namc]]$lfsrarr, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
-  compl[[namc]]$mn.comb <- wt.mnarr
-  compl[[namc]]$sd.comb <- sqrt(wt.varr + wt.mnsqarr - wt.mnarr^2)
-  compl[[namc]]$lfsr.comb <- wt.lfsrarr
-  if(Meth == "MVphen" & nSig == 1 & Data == "impc"){
-    loocv.wt.mnarr <- apply(sweep(compl[[namc]]$loocv.mnarr, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
-    loocv.wt.varr <- apply(sweep(compl[[namc]]$loocv.sdarr^2, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
-    loocv.wt.mnsqarr <- apply(sweep(compl[[namc]]$loocv.mnarr^2, c(1, 3), pmix, '*'), 1:2, function(v) sum(v, na.rm = T))
-    compl[[namc]]$loocv.mn.comb <- loocv.wt.mnarr
-    compl[[namc]]$loocv.sd.comb <- sqrt(loocv.wt.varr + loocv.wt.mnsqarr - loocv.wt.mnarr^2)
-  }
-  resl.comp[[namc]] <- c(resl.comp[[namc]], list(mn = compl[[namc]]$mn.comb[sam_names, meas_names], 
-                                                 sd = compl[[namc]]$sd.comb[sam_names, meas_names], 
-                                                 loocv.mn = compl[[namc]]$loocv.mn.comb[sam_names, meas_names], 
-                                                 loocv.sd = compl[[namc]]$loocv.sd.comb[sam_names, meas_names],
-                                                 lfsr = compl[[namc]]$lfsr.comb[sam_names, meas_names]))
 }
 
 
