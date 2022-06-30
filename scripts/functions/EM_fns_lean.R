@@ -222,7 +222,7 @@ em.update.function <- function(Y.em, S.em, Sigl, R, omegaseq, pimat, Ksig,
         negobj <- negobj + llikv[i]
       }
     }
-    cat("\n")
+    # cat("\n")
     return(list(obj = c(-negobj), llikv = llikv, llmat = llmat))
   }
 }

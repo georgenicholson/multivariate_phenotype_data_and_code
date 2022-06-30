@@ -1,5 +1,5 @@
 
-get_control_parameters_mv <- function(control = list()) {
+get_control_parameters_mv <- function(control = list(), output_to_dropbox = FALSE) {
   
   defaults <- list()
   
@@ -74,7 +74,7 @@ get_control_parameters_mv <- function(control = list()) {
   defaults$figure_dir <- "figures"
   defaults$table_dir <- "tables"
   defaults$text_numbers_dir <- "text_numbers"
-  defaults$output_to_dropbox <- FALSE
+  defaults$output_to_dropbox <- output_to_dropbox
   if (defaults$output_to_dropbox) {
     defaults$dropbox_figure_dir <- "C:/Users/nicho/Dropbox/Apps/Overleaf/Illuminating the mammalian genome with multivariate phenotype analysis/revision_figures"
     defaults$dropbox_text_numbers_dir <- "C:/Users/nicho/Dropbox/Apps/Overleaf/Illuminating the mammalian genome with multivariate phenotype analysis/revision_text_numbers"

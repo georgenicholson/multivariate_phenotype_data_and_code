@@ -306,7 +306,7 @@ err.rate.control <- function(control,
     
     line.fpr.x <- length(unique(resimp0$geno[resimp0[, namc] != 0]))
     line.fpr.n <- length(unique(resimp0$geno))
-    line.fpr.ci <- binconf(x = line.fpr.x, n = line.fpr.n, method = "exact")
+    line.fpr.ci <- Hmisc::binconf(x = line.fpr.x, n = line.fpr.n, method = "exact")
     line.fpr.est <- line.fpr.ci[, "PointEst"]
     line.pr.est <- length(unique(resimp1$geno[resimp1[, namc] != 0])) / length(unique(resimp1$geno))
     line.fdr.ci <- pmin(1, p.complete.null.true * line.fpr.ci / line.pr.est)
