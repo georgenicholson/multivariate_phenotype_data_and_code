@@ -7,7 +7,7 @@ create_table_of_analyses <- function(control, check_status = F, run_type = c("de
                           MVphen_K = 20, 
                           mem = 2000,
                           n_subsamples = 1,
-                          stringsAsFactors = F)
+                          stringsAsFactors = F)[1, ]
   }  
   
   if(run_type == "main") {
@@ -67,9 +67,9 @@ create_table_of_analyses <- function(control, check_status = F, run_type = c("de
   runtab$loocv <- ifelse(runtab$Meth == "MVphen" & runtab$nSig == 1 & runtab$N == 2000 & runtab$MVphen_K == 20, T, F)
   
   runtab[, c("file_core_name")] <- NA
-  for (scen in 1:nrow(runtab)) {
+  for (analysis_table_row in 1:nrow(runtab)) {
     for (j in 1:ncol(runtab)) {
-      assign(colnames(runtab)[j], runtab[scen, j], pos = sys.frame(which = 0))
+      assign(colnames(runtab)[j], runtab[analysis_table_row, j], pos = sys.frame(which = 0))
     }
     variables_in_filename_use <- control$variables_in_filename
     XDmeth <- Meth
@@ -85,9 +85,16 @@ create_table_of_analyses <- function(control, check_status = F, run_type = c("de
                              switch(Meth, eb = "_res.RData", mash = "_mash_resl.RData", XD = "_bovy_resl.RData"))
     emout_file_name <- paste0(control$methods_comp_dir, "/", file_core_name, 
                               switch(Meth, eb = "_emout.RData", mash = NA, XD = NA))
-    runtab$file_core_name[scen] <- gsub("seed\\_1", "seed\\_XXX", file_core_name[1])
+    runtab$file_core_name[analysis_table_row] <- gsub("seed\\_1", "seed\\_XXX", file_core_name[1])
   }
   rownames(runtab) <- 1:nrow(runtab)
+  runtab <- runtab[order(match(runtab$Data, c("impc", "eqtl")),
+                         match(runtab$Meth, c("XD", "mash", "MVphen", "MVphen_N_500", "MVphen_rand"))), ]
+  runtab[runtab$Meth == "mash" & runtab$Data == "impc", "nSig"] <- 158
+  runtab[runtab$Meth == "mash" & runtab$Data == "eqtl", "nSig"] <- 54
+  runtab
+  
+  
   return(runtab)  
 }
 

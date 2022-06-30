@@ -1,7 +1,8 @@
 
 EM_algo_mixture_multi_Sig <- function(control, Y.em, S.em, MVphen_K, Sigl.em.init, R.em.init,
                             update.Sig = T, update.K = F, pi.init = NULL,
-                            fac.model = c("fa", "pca")[1], bic.pen.mult = 0.5, wish.pri = F){
+                            fac.model = c("fa", "pca")[1], bic.pen.mult = 0.5, wish.pri = F,
+                            verbose = F){
   M <- length(control$omegaseq)
   R <- R.em.init
   N <- nrow(Y.em)
@@ -86,18 +87,20 @@ EM_algo_mixture_multi_Sig <- function(control, Y.em, S.em, MVphen_K, Sigl.em.ini
         converged <- TRUE
       }
       dob <- objv[length(objv)] - objv[length(objv) - 1]
-      print(paste("Iteration = ", itnum))
-      print(paste0("Ksig = ", Ksig))
-      print(paste0("Obj = ", objv[length(objv)]))
-      print(paste0("Change in obj = ", dob))
-      if (ncol(pimat) > 1) {
-        print("Pi = ")
-        print(round(colSums(pimat) * 100, 2))
+      if (verbose) {
+        print(paste("Iteration = ", itnum))
+        print(paste0("Ksig = ", Ksig))
+        print(paste0("Obj = ", objv[length(objv)]))
+        print(paste0("Change in obj = ", dob))
+        if (ncol(pimat) > 1) {
+          print("Pi = ")
+          print(round(colSums(pimat) * 100, 2))
+        }
+        print(paste0("llik.scale = ", llik.scale))
+        print(paste0("tolerance.eps = ", tolerance.eps))
+        print(paste0("most.recent.change = ", most.recent.change))
+        plot(objv, ty = "l")
       }
-      print(paste0("llik.scale = ", llik.scale))
-      print(paste0("tolerance.eps = ", tolerance.eps))
-      print(paste0("most.recent.change = ", most.recent.change))
-      plot(objv, ty = "l")
     }
     itnum <- itnum + 1
   }

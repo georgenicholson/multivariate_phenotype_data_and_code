@@ -186,6 +186,9 @@ res_to_fill$`CV Log Likelihood` <- paste0(format.cvlik.fn_eqtl(true.mns),
                                           " (", format.cvlik.fn_eqtl(true.mns - 2 * true.ses), ", ", format.cvlik.fn_eqtl(true.mns + 2 * true.ses), ")")
 res_to_fill$`CV Log Likelihood`[which_row_best_cvlik_eqtl] <- paste0("\\underline{", res_to_fill$`CV Log Likelihood`[which_row_best_cvlik_eqtl], "}")
 
+res_to_fill[res_to_fill$Method == "mash", "S"] <- control$default_parameters$eqtl$P + 10
+res_to_fill[which_row_main_meth, "CV Log Likelihood"] <- paste0("\\textbf{", res_to_fill[which_row_main_meth, "CV Log Likelihood"], "}")
+
 tabout_eqtl <- print(xtable(res_to_fill, label = "tab:cvlik_impc", align = rep("l", ncol(restaball.lik) + 1),
                            caption = "Comparison of cross-validated log likelihood across MV methods"),
                     caption.placement = "top", 
