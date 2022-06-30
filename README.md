@@ -10,17 +10,17 @@ Follow instructions to install [Git](https://github.com/git-guides/install-git/)
 
 ### Clone the Git repository
 
-Choose the local directory where you want the repository cloned (let's call this “/path/to/your/git/repos/”), and change directory to it. 
+Choose the local directory where you want the repository cloned (let's call this "/path/to/your/git/repositories/"), and change directory to it. 
 
 
 Linux:
 ```
-MV_HOME=“/path/to/your/local/git/repositories/”
+MV_HOME="/path/to/your/local/git/repositories/"
 cd $MV_HOME
 ```
 Windows:
 ```
-set MV_HOME=“/path/to/your/local/git/repositories/”
+set MV_HOME="/path/to/your/local/git/repositories/"
 cd %MV_HOME%
 ```
 [Clone](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository)
