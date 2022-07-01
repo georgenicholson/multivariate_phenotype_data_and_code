@@ -35,11 +35,16 @@ git clone https://github.com/georgenicholson/multivariate_phenotype_data_and_cod
 Linux:
 ```
 cd $MV_HOME/multivariate_phenotype_data_and_code
-wget https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.0/output.zip
+curl https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.0/output.zip
 unzip output.zip
 ```
-Windows users, please download the results in [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v1.1/output.zip), move the file to "%MV_HOME%/multivariate_phenotype_data_and_code", and unzip the file there, so that the results files are in "%MV_HOME%/multivariate_phenotype_data_and_code/output/global_results/".
-
+Windows:
+```
+cd %MV_HOME%/multivariate_phenotype_data_and_code
+curl https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.0/output.zip
+unzip output.zip
+```
+Alternatively, you can download output.zip from [here](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.0/output.zip), move the file to "%MV_HOME%/multivariate_phenotype_data_and_code", and unzip the file there, so that the results files are in "%MV_HOME%/multivariate_phenotype_data_and_code/output/global_results/".
 
 ### Pull or build Docker image
 
@@ -56,15 +61,15 @@ docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 -f Doc
 
 ### Check installed location of data and results
 
-The raw data were downloaded as part of the Git repository clone above, and should now be in [/data/Data_all.RDS](/data/Data_all.RDS).
+The raw data were downloaded as part of the Git repository clone above, and should now be in [data/Data_all.RDS](data/Data_all.RDS).
 
-The results files underlying the paper's Figures should be in subfolder [/output/global_results/](/output/global_results/) once you have unzipped [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v1.1/output.zip) as described above.
+The results files underlying the paper's Figures should be in subfolder "/output/global_results/"" once you have unzipped [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v1.1/output.zip) as described above.
 
 
 
 ## Generating paper figures
 
-The script below, [scripts/05_generate_results.R](scripts/05_generate_results.R),  takes as input the raw data stored in [/data/Data_all.RDS](data/Data_all.RDS) as well as the outputs of model fits, stored in [/output/global_results/](output/global_results/).
+The script below, [scripts/05_generate_results.R](scripts/05_generate_results.R),  takes as input the raw data stored in [data/Data_all.RDS](data/Data_all.RDS) as well as the outputs of model fits, stored in "output/global_results/". Upon running the script below, the figures should be generated in the "figures/" folder.
 
 Linux:
 ```
@@ -77,9 +82,11 @@ docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_p
 
 
 
-The Figures should now have been generated in the [/figures/](/figures/) folder.
-
 ## Demo run of software
+
+The script below is a demo run on a data subset[^5], which takes approximately four minutes to complete and outputs results in "/output/methods_comparison".
+
+[^5]:Demo run has: Method = ComposeMV, Data = impc, N = 100, P = 10, S = 2, K = 5
 
 Linux:
 ```
@@ -89,7 +96,6 @@ Windows:
 ```
 docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R demo 1 1
 ```
-Analysis outputs appear in "/output/methods_comparison", with the above demo analysis taking approximately four minutes to run.
 
 ## Reproducing paper results
 
@@ -140,8 +146,11 @@ Each (row, fold) analysis combination can be computed in parallel, so you can ad
 Once a full set of raw analysis outputs has been generated in "/output/methods_comparison/", the following four scripts are run sequentially to generate the results presented in the paper:
 
 (1) Collect outputs together with "/scripts/02_collect_results.R"
+
 (2) Fit factor model with "/scripts/03_estimate_global_factors.R"
+
 (3) Perform hit calling "/scripts/04_calculate_hit_rates.R" 
+
 (4) Generate figures and tables with "/scripts/05_generate_results.R" 
 
 Each of the above scripts should be run within the Docker image, for example
