@@ -25,43 +25,43 @@ set MV_HOME="/path/to/your/local/git/repositories/"
 cd %MV_HOME%
 ```
 [Clone](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository)
-our repository onto your local machine and checkout release v2.0
+our repository onto your local machine and checkout release v3.0
 ```
 git clone https://github.com/georgenicholson/multivariate_phenotype_data_and_code.git
 cd multivariate_phenotype_data_and_code
-git checkout tags/v2.0 -b my_local_branch
+git checkout tags/v3.0 -b my_local_branch
 ```
 ### Download and unzip results
 
 Linux:
 ```
 cd $MV_HOME/multivariate_phenotype_data_and_code
-curl https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.0/output.zip
+curl https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v3.0/output.zip
 unzip output.zip
 ```
 Windows:
 ```
 cd %MV_HOME%/multivariate_phenotype_data_and_code
-curl https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.0/output.zip
+curl https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v3.0/output.zip
 unzip output.zip
 ```
-Alternatively, you can download output.zip from [here](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.0/output.zip), move the file to "%MV_HOME%/multivariate_phenotype_data_and_code", and unzip the file there, so that the results files are in "%MV_HOME%/multivariate_phenotype_data_and_code/output/global_results/".
+Alternatively, you can download output.zip from [here](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v3.0/output.zip), move the file to "%MV_HOME%/multivariate_phenotype_data_and_code", and unzip the file there, so that the results files are in "%MV_HOME%/multivariate_phenotype_data_and_code/output/global_results/".
 
 ### Pull or build Docker image
 
 Pull the Docker image from [dockerhub](https://hub.docker.com/) which has been built from the Dockerfile in the root folder of the Git repository:
 ```
-docker pull georgenicholson/multivariate_phenotype_data_and_code:v2.0
+docker pull georgenicholson/multivariate_phenotype_data_and_code:v3.0
 ```
 If instead you would like to build the Docker image locally, you can do this by running the following command:
 
 Linux
 ```
-docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 - < $MV_HOME/multivariate_phenotype_data_and_code/Dockerfile
+docker build -t georgenicholson/multivariate_phenotype_data_and_code:v3.0 - < $MV_HOME/multivariate_phenotype_data_and_code/Dockerfile
 ```
 Windows
 ```
-docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 - < %MV_HOME%/multivariate_phenotype_data_and_code/Dockerfile
+docker build -t georgenicholson/multivariate_phenotype_data_and_code:v3.0 - < %MV_HOME%/multivariate_phenotype_data_and_code/Dockerfile
 ```
 
 
@@ -70,7 +70,7 @@ docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 - < %M
 
 The raw data were downloaded as part of the Git repository clone above, and should now be in [data/Data_all.RDS](data/Data_all.RDS).
 
-The results files underlying the paper's Figures should be in subfolder "/output/global_results/"" once you have unzipped [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.0/output.zip) as described above.
+The results files underlying the paper's Figures should be in subfolder "/output/global_results/"" once you have unzipped [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v3.0/output.zip) as described above.
 
 
 
@@ -80,11 +80,11 @@ The script below, [scripts/05_generate_results.R](scripts/05_generate_results.R)
 
 Linux:
 ```
-docker run --entrypoint Rscript --rm --workdir /home -v $MV_HOME/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/05_generate_results.R
+docker run --entrypoint Rscript --rm --workdir /home -v $MV_HOME/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v3.0 --no-restore --no-save scripts/05_generate_results.R
 ```
 Windows:
 ```
-docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/05_generate_results.R
+docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v3.0 --no-restore --no-save scripts/05_generate_results.R
 ```
 
 
@@ -97,11 +97,11 @@ The script below is a demo run on a data subset,[^5] which takes approximately f
 
 Linux:
 ```
-docker run --entrypoint Rscript --rm --workdir /home -v $MV_HOME/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R demo 1 1
+docker run --entrypoint Rscript --rm --workdir /home -v $MV_HOME/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v3.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R demo 1 1
 ```
 Windows:
 ```
-docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R demo 1 1
+docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v3.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R demo 1 1
 ```
 
 ## Reproducing paper results
@@ -130,11 +130,11 @@ The following command run the first fold of the main analysis of the paper (row 
 
 Linux:
 ```
-docker run --entrypoint Rscript --rm --workdir /home -v $MV_HOME/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R benchmark 5 1
+docker run --entrypoint Rscript --rm --workdir /home -v $MV_HOME/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v3.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R benchmark 5 1
 ```
 Windows:
 ```
-docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R benchmark 5 1
+docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v3.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R benchmark 5 1
 ```
 
 
@@ -147,7 +147,7 @@ for row in {1..24}
 do
   for fold in {1..10} 
   do
-    docker run --entrypoint Rscript --rm --workdir /home -v $MV_HOME/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R benchmark $row $fold
+    docker run --entrypoint Rscript --rm --workdir /home -v $MV_HOME/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v3.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R benchmark $row $fold
   done
 done
 ```
@@ -172,11 +172,11 @@ Each of the above scripts should be run within the Docker image, for example
 
 Linux:
 ```
-docker run --entrypoint Rscript --rm --workdir /home -v $MV_HOME/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/02_collect_results.R
+docker run --entrypoint Rscript --rm --workdir /home -v $MV_HOME/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v3.0 --no-restore --no-save scripts/02_collect_results.R
 ```
 Windows:
 ```
-docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/02_collect_results.R
+docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v3.0 --no-restore --no-save scripts/02_collect_results.R
 ```
 
 
