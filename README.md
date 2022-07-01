@@ -70,7 +70,7 @@ docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 - < %M
 
 The raw data were downloaded as part of the Git repository clone above, and should now be in [data/Data_all.RDS](data/Data_all.RDS).
 
-The results files underlying the paper's Figures should be in subfolder "/output/global_results/"" once you have unzipped [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.01/output.zip) as described above.
+The results files underlying the paper's Figures should be in subfolder "/output/global_results/"" once you have unzipped [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.0/output.zip) as described above.
 
 
 
