@@ -25,12 +25,11 @@ set MV_HOME="/path/to/your/local/git/repositories/"
 cd %MV_HOME%
 ```
 [Clone](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository)
-our repository onto your local machine and checkout the paper release v2.0
+our repository onto your local machine and checkout release v2.0
 ```
 git clone https://github.com/georgenicholson/multivariate_phenotype_data_and_code.git
 cd multivariate_phenotype_data_and_code
 git checkout tags/v2.0 -b my_local_branch
-
 ```
 ### Download and unzip results
 
