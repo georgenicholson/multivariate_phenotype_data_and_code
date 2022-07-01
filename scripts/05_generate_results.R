@@ -35,16 +35,16 @@ source("scripts/05a_heatmap_of_hits.R")
 source("scripts/05b_power_comparisons.R")
 # This script generates Figures 6, S5, S6
 source("scripts/05c_reference_lines.R")
-# Please note: 05d_gene_ontology.R will crash if the Bioconductor packages "AnnotationDbi" and "Mus.musculus" 
-# are not installed (see README for installation instructions)
 try ({
   # This script generates Figures 7, S7
   source("scripts/05d_gene_ontology.R")
 })
 # This script generates Figures S8, 8
 source("scripts/05e_factor_model.R")
-# Please note: 05f_benchmarking.R will crash if you have generated your own set of results 
-# using run_type == "main" instead of run_type == "benchmark"
+# Please note: 05f_benchmarking.R will crash if you have 
+# generated a set of incomplete benchmarking results 
+# that overwrite the files in output/global_results/ .
+# Re-downloading and unzipping output.zip fixes this
 try ({
   # This script generates Figure S9, and Tables 9, 10, 11 
   source("scripts/05f_benchmarking.R")
