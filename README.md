@@ -1,8 +1,4 @@
----
-output:
-  html_document: default
-  pdf_document: default
----
+
 # Multivariate phenotype analysis enable genome-wide inference of mammalian gene function
 
 
