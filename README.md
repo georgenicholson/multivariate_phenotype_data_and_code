@@ -11,7 +11,7 @@ Follow instructions to install [Git](https://github.com/git-guides/install-git/)
 
 ### Clone Git repository
 
-Choose the local directory where you want the repository cloned (let's call this "/path/to/your/git/repositories/"), and change directory to it. 
+Choose the local directory where you want the repository cloned (let's call this "/path/to/your/git/repositories/") and change directory to it. 
 
 
 Linux:
@@ -70,7 +70,7 @@ docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 - < %M
 
 The raw data were downloaded as part of the Git repository clone above, and should now be in [data/Data_all.RDS](data/Data_all.RDS).
 
-The results files underlying the paper's Figures should be in subfolder "/output/global_results/"" once you have unzipped [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.01/output.zip) as described above.
+The results files underlying the paper's Figures should be in subfolder "/output/global_results/"" once you have unzipped [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.0/output.zip) as described above.
 
 
 
@@ -91,9 +91,9 @@ docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_p
 
 ## Demo run of software
 
-The script below is a demo run on a data subset[^5], which takes approximately four minutes to complete and outputs results in "/output/methods_comparison".
+The script below is a demo run on a data subset,[^5] which takes approximately four minutes to complete and outputs results in "/output/methods_comparison/".
 
-[^5]:Demo run has: Method = ComposeMV, Data = impc, N = 100, P = 10, S = 2, K = 5
+[^5]:Demo run has: Method = ComposeMV, Data = impc, N = 100, P = 10, S = 2, K = 5.
 
 Linux:
 ```
@@ -106,14 +106,16 @@ docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_p
 
 ## Reproducing paper results
 
-We list the analyses performed in the paper in Table A below. Each row of the table corresponds to an analysis based on a (Data, Method, Fold) combination, where "Fold" refers to cross-validation fold. Our method is labelled "ComposeMV" and we benchmark it alongside "mash" ([Urbut et al.](https://www.nature.com/articles/s41588-018-0268-8)), and "XD" ([Bovy et al.](https://www.jstor.org/stable/23024867?seq=1)), with our method building on both of these existing approaches. 
+We list the analyses performed in the paper in Table A below. Each row of the table corresponds to an analysis based on a (Data, Method, Fold) combination, where "Fold" refers to cross-validation fold. Our method is labelled "ComposeMV" and we benchmark it alongside "mash" ([Urbut et al.](https://www.nature.com/articles/s41588-018-0268-8)), and "XD" ([Bovy et al.](https://www.jstor.org/stable/23024867?seq=1)) -- our method built on both of these existing approaches. 
 
-The analyses shown in Table A comprise the main analysis of our paper (row 5), our model checking analyses (rows 12-13), while the other rows comprise the benchmarking analysis presented in Tables 8-11 of our paper. N and P are a number of samples and measurement dimension of each data set. S and K are defined in the paper (S is the number of covariance matrices in the mixture model, and K is the dimensionality of the factor model). 
+The analyses shown in Table A comprise: the main analysis of our paper (row 5), our model checking analyses (rows 12-13), and the other rows are the benchmarking analysis presented in Tables 8-11 of our paper. N and P are respectively the number of samples and dimensionality of each measurement. S and K are defined in the paper (S is the number of covariance matrices in the mixture model, and K is the dimensionality of the factor model). 
 
 
-Each analysis performed on each of several cross validation folds (see # folds). Adequate memory allocations and approximate run times (single thread of an [Intel Xeon E5-1650 @ 3.20GHz](https://www.cpubenchmark.net/cpu.php?cpu=Intel+Xeon+E5-1650+%40+3.20GHz&id=1211)) are shown in Table A. 
+Each analysis performed on each of several cross validation folds (see # folds). Adequate memory allocations and approximate run times are shown in Table A.[^4]
 
-The script to perform model fitting is "/scripts/01_model_fitting_wrapper.R" to ehich we provide three command line arguments:
+[^4]:Run times based on single thread of an [Intel Xeon E5-1650 @ 3.20GHz](https://www.cpubenchmark.net/cpu.php?cpu=Intel+Xeon+E5-1650+%40+3.20GHz&id=1211) CPU.
+
+The script to perform model fitting is "/scripts/01_model_fitting_wrapper.R" to which we provide three command line arguments:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(argument 1): "benchmark" to specify benchmarking analysis 
 
