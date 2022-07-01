@@ -25,9 +25,10 @@ set MV_HOME="/path/to/your/local/git/repositories/"
 cd %MV_HOME%
 ```
 [Clone](https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository)
-our repository onto your local machine
+our repository onto your local machine and checkout the paper release v2.0
 ```
 git clone https://github.com/georgenicholson/multivariate_phenotype_data_and_code.git
+git checkout tags/v2.0 -b my_local_branch
 
 ```
 ### Download and unzip results
@@ -52,9 +53,15 @@ Pull the Docker image from [dockerhub](https://hub.docker.com/) which has been b
 ```
 docker pull georgenicholson/multivariate_phenotype_data_and_code:v2.0
 ```
-If instead you would like to build the Docker image locally, you can do this by running the following command in the same folder as the Dockerfile, i.e. run in "$MV_HOME/multivariate_phenotype_data_and_code":
+If instead you would like to build the Docker image locally, you can do this by running the following command:
+
+Linux
 ```
-docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 -f Dockerfile . 
+docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 - < $MV_HOME/multivariate_phenotype_data_and_code/Dockerfile
+```
+Windows
+```
+docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 - < %MV_HOME%/multivariate_phenotype_data_and_code/Dockerfile
 ```
 
 
@@ -63,7 +70,7 @@ docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 -f Doc
 
 The raw data were downloaded as part of the Git repository clone above, and should now be in [data/Data_all.RDS](data/Data_all.RDS).
 
-The results files underlying the paper's Figures should be in subfolder "/output/global_results/"" once you have unzipped [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v1.1/output.zip) as described above.
+The results files underlying the paper's Figures should be in subfolder "/output/global_results/"" once you have unzipped [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v2.01/output.zip) as described above.
 
 
 
@@ -99,18 +106,25 @@ docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_p
 
 ## Reproducing paper results
 
-We list the analyses performed in the paper in Table A below. Each row of the table corresponds to an analysis based on a (Data, Method, Fold) combination, where "Fold" refers to cross-validation fold. Our method is labelled "ComposeMV" and we benchmark it alongside "mash" ([Urbut et al.](https://www.nature.com/articles/s41588-018-0268-8)), and "XD" ([Bovy et al.](https://www.jstor.org/stable/23024867?seq=1)), with our methods building on both of these existing approaches. 
+We list the analyses performed in the paper in Table A below. Each row of the table corresponds to an analysis based on a (Data, Method, Fold) combination, where "Fold" refers to cross-validation fold. Our method is labelled "ComposeMV" and we benchmark it alongside "mash" ([Urbut et al.](https://www.nature.com/articles/s41588-018-0268-8)), and "XD" ([Bovy et al.](https://www.jstor.org/stable/23024867?seq=1)), with our method building on both of these existing approaches. 
 
-The analyses shown in Table A comprise the main analysis of our paper (row 5), our model checking analyses (rows 12-13), while the other rows comprise the benchmarking analysis (Tables 8-11 of our paper). N and P are a number of samples and measurement dimension of each data set. S and K are defined in the paper (S is the number of covariance matrices in the mixture model, and K is the dimensionality of the factor model). 
+The analyses shown in Table A comprise the main analysis of our paper (row 5), our model checking analyses (rows 12-13), while the other rows comprise the benchmarking analysis presented in Tables 8-11 of our paper. N and P are a number of samples and measurement dimension of each data set. S and K are defined in the paper (S is the number of covariance matrices in the mixture model, and K is the dimensionality of the factor model). 
 
 
 Each analysis performed on each of several cross validation folds (see # folds). Adequate memory allocations and approximate run times (single thread of an [Intel Xeon E5-1650 @ 3.20GHz](https://www.cpubenchmark.net/cpu.php?cpu=Intel+Xeon+E5-1650+%40+3.20GHz&id=1211)) are shown in Table A. 
 
-The script to perform model fitting is "/scripts/01_model_fitting_wrapper.R" and we provide three command line arguments: (i) "benchmark" to specify benchmarking analysis; (ii) the analysis row of Table A as an integer; (iii) the fold number as an integer. 
+The script to perform model fitting is "/scripts/01_model_fitting_wrapper.R" to ehich we provide three command line arguments:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(argument 1): "benchmark" to specify benchmarking analysis 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(argument 2): the analysis row of Table A as an integer 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(argument 3): the fold number as an integer 
 
 ### Reproducing one fold of the main analysis
 
-To run the first fold of the main analysis of the paper (row 5 of Table A), the command-line arguments are "benchmark 5 1" and the analysis is run within the Docker image as follows:
+The following command run the first fold of the main analysis of the paper (row 5 of Table A). The command-line arguments are "benchmark 5 1" and the analysis is run within the Docker image. Analysis outputs appear in "/output/methods_comparison/", with the analysis below taking approximately 1.8 hours to run.
+ 
 
 Linux:
 ```
@@ -120,12 +134,11 @@ Windows:
 ```
 docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_phenotype_data_and_code:/home georgenicholson/multivariate_phenotype_data_and_code:v2.0 --no-restore --no-save scripts/01_model_fitting_wrapper.R benchmark 5 1
 ```
-Analysis outputs appear in "/output/methods_comparison/", with the above analysis taking approximately 1.8 hours to run (see row 5 of Table A).
 
 
 ### Reproducing all analyses
 
-Here is the pseudocode for reproducing all analyses, with "row" referring to a row of Table A and "fold" a cross-validation fold of the data set:[^1] 
+Below is pseudocode for reproducing all analyses, with "row" referring to a row of Table A and "fold" a cross-validation fold of the data set. Each (row, fold) analysis combination can be computed in parallel, so you can adapt the pseudocode to submit analyses as separate jobs to your server's workload management system. The total CPU time across all analyses is approximately four months, and the outputs are all generated in "/output/methods_comparison/".[^1] 
 ```
 #!/bin/bash
 for row in {1..24}
@@ -138,12 +151,12 @@ done
 ```
 [^1]: Note from row 5 of Table A that the main analysis is run for 50 folds.
 
-Each (row, fold) analysis combination can be computed in parallel, so you can adapt the above pseudocode to submit analyses as separate jobs to your server's workload management system. The total CPU time across all analyses is approximately four months, and the outputs are all generated in "/output/methods_comparison/".
+
 
 
 ### Postprocessing analysis outputs into paper results
 
-Once a full set of raw analysis outputs has been generated in "/output/methods_comparison/", the following four scripts are run sequentially to generate the results presented in the paper:
+Once a full set of raw analysis outputs has been generated in "/output/methods_comparison/" the following four scripts are run sequentially to generate the results presented in the paper:
 
 (1) Collect outputs together with "/scripts/02_collect_results.R"
 
@@ -167,7 +180,7 @@ docker run --entrypoint Rscript --rm --workdir /home -v %MV_HOME%/multivariate_p
 
 
 
-### Table A: analyses in paper
+### Table A: Analyses in paper
 
 
 | Row | Method          | Data | N    | P   | S   | K  | # folds | RAM (GB) | CPU hrs / fold |
