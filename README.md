@@ -41,20 +41,18 @@ unzip output.zip
 Windows users, please download the results in [output.zip](https://github.com/georgenicholson/multivariate_phenotype_data_and_code/releases/download/v1.1/output.zip), move the file to "%MV_HOME%/multivariate_phenotype_data_and_code", and unzip the file there, so that the results files are in "%MV_HOME%/multivariate_phenotype_data_and_code/output/global_results/".
 
 
-### Pull Docker image
+### Pull or build Docker image
 
-Pull the Docker image from [dockerhub](https://hub.docker.com/) which has been created from the Dockerfile in the root folder of the git repository:[^2]
-
-[^2]:If you would like to build the Docker image locally you can do this by running the following command in the same folder as the Dockerfile, i.e. run in "$MV_HOME/multivariate_phenotype_data_and_code":
+Pull the Docker image from [dockerhub](https://hub.docker.com/) which has been built from the Dockerfile in the root folder of the Git repository:
+```
+docker pull georgenicholson/multivariate_phenotype_data_and_code:v2.0
+```
+If instead you would like to build the Docker image locally, you can do this by running the following command in the same folder as the Dockerfile, i.e. run in "$MV_HOME/multivariate_phenotype_data_and_code":
 ```
 docker build -t georgenicholson/multivariate_phenotype_data_and_code:v2.0 -f Dockerfile . 
 ```
 
 
-
-```
-docker pull georgenicholson/multivariate_phenotype_data_and_code:v2.0
-```
 
 ### Check installed location of data and results
 
