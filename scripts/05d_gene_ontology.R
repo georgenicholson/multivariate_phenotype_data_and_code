@@ -1,5 +1,5 @@
 ################################################
-# This script generates Figures 7, S7
+# This script generates Figures 8, S7
 ################################################
 
 library("foreach")
@@ -460,7 +460,7 @@ table(y1, y2)
 impc_gene_ids <- sapply(strsplit(names(which(y1 == -1 & y2 == 1)), split = "_"), function(x) x[[1]])
 
 ##############################################
-# Generate Figures 7 and S7
+# Generate Figures 8 and S7
 ##############################################
 red_blue_col_palette <- c(rgb(0, 0, 1, alpha = seq(1, 0, len = 500)), rgb(1, 0, 0, alpha = seq(0, 1, len = 500)))
 for(go.plot.type in c("all", "sub")[1]){
@@ -498,7 +498,7 @@ for(go.plot.type in c("all", "sub")[1]){
         }
       }
     }
-    mtext(side = 4, line = 2, text = "Rows labeled (a-h) are shown in Table 3", cex = .8)
+    mtext(side = 4, line = 2, text = "Rows labeled (a-h) are shown in Figure 9", cex = .8)
     phmap.sub <- phmap[phmap$nam %in% colnames(zpl), ]
     proctab <- sort(table(phmap.sub$procnam), decreasing = T)
     minperprocname <- 0
@@ -533,7 +533,7 @@ for(go.plot.type in c("all", "sub")[1]){
     } else {
       if (fnamc == "mv_all_go_heatmap_th_2.jpg") {
         file.rename(from = paste(control$figure_dir, "/", fnamc, sep = ""), 
-                    to = file.path(control$figure_dir, "Figure_7.jpg"))
+                    to = file.path(control$figure_dir, "Figure_8.jpg"))
       }
       if (fnamc == "uv_all_go_heatmap_th_2.jpg") {
         file.rename(from = paste(control$figure_dir, "/", fnamc, sep = ""), 
@@ -562,10 +562,10 @@ rownames(tabcomp)[rownames(tabcomp) == "21-1000"] <- ">20"
 colnames(tabcomp)[colnames(tabcomp) == "21-1000"] <- ">20"
 tabcomp
 tabcomp[] <- prettyNum(tabcomp, big.mark = ",")
-
+taba <- tabcomp
 library(xtable)
 tabout <- print(xtable(tabcomp, label = "tab:uvmvgocounts", 
-                       caption = "Number of co-enriched  GO term gene sets for each IMPC gene set for the UV (left) and MV (top) models"),
+                       caption = "Number of co-enriched GO term gene sets for each IMPC gene set for the UV (left) and MV (top) models"),
                 caption.placement = "top", 
                 floating = FALSE)
 cat(tabout, file = paste(control$dropbox_table_dir, "/mvugotab_th_", sd_mult_big_eff_thresh, ".txt", sep = ""))
@@ -596,6 +596,7 @@ rownames(tabcomp_with_zeroes)[rownames(tabcomp_with_zeroes) == "21-1000"] <- ">2
 colnames(tabcomp_with_zeroes)[colnames(tabcomp_with_zeroes) == "21-1000"] <- ">20"
 tabcomp_with_zeroes[] <- prettyNum(tabcomp_with_zeroes, big.mark = ",")
 tabcomp_with_zeroes
+tabb <- tabcomp_with_zeroes
 library(xtable)
 tabout <- print(xtable(tabcomp_with_zeroes, label = "tab:uvmv_enriched_counts_num_impc_per_go", 
                        caption = "Number of co-enriched IMPC gene sets for each GO term gene set for the UV (left) and MV (top) models"),
@@ -605,6 +606,28 @@ cat(tabout, file = paste(control$dropbox_table_dir, "/uvmv_enriched_counts_num_i
 if (!control$output_to_dropbox) {
   cat(tabout, file = paste(control$table_dir, "/Table_3b.txt", sep = ""))
 }
+
+
+
+tab_rownam <- as.table(matrix(c("", "", "UV model", "", ""), 5, 1, dimnames = list(rep("", 5), "")))
+bin_names <- binnam
+bin_names[bin_names == "21-1000"] <- ">20"
+tab_comb <- rbind(t(c("", "", bin_names, "", bin_names)),
+                  cbind(tab_rownam, bin_names, taba, rep("", 5), tabb))
+addtorow <- list()
+addtorow$pos <- list(-1)
+addtorow$command <- c(paste0('&& \\multicolumn{5}{l}{(a) GO terms per phenotype}& &\\multicolumn{5}{l}{(b) Phenotypes per GO term}\\\\',
+                                '&& \\multicolumn{5}{c}{MV model}& &\\multicolumn{5}{c}{MV model}\\\\'))
+tabout_both <- print(xtable(tab_comb, align = "lll|llllll|lllll"), floating = FALSE, 
+                     add.to.row = addtorow,
+                     include.rownames = FALSE,
+                     include.colnames = FALSE,
+                     hline.after = c(1))
+cat(tabout_both, file = paste(control$dropbox_table_dir, "/combined_GO_IMPC_counts_table_th_", sd_mult_big_eff_thresh, ".txt", sep = ""))
+if (!control$output_to_dropbox) {
+  cat(tabout_both, file = paste(control$table_dir, "/Table_2.txt", sep = ""))
+}
+
 
 
 
