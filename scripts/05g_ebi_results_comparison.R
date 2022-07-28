@@ -93,6 +93,23 @@ if (!control$output_to_dropbox) {
   cat(tabout.mv, file = paste(control$table_dir, "/Table_1b.txt", sep = ""))
 }
 
+tab_rownam <- as.table(matrix(c("", "IMPC database", ""), 3, 1, dimnames = list(rep("", 3), "")))
+tab_comb <- rbind(t(c("", "", -1, 0, 1, "", -1, 0, 1)),
+                  cbind(tab_rownam, c(-1, 0, 1), tab.uv.ebi.comp, rep("", 3), tab.eb.ebi.comp))
+addtorow <- list()
+addtorow$pos <- list(-1)
+addtorow$command <- '&& \\multicolumn{3}{c}{(a) UV Model}& &\\multicolumn{3}{c}{(b) MV Model}\\\\'
+tabout_both <- print(xtable(tab_comb, align = "lll|llll|lll"), floating = FALSE, 
+                     add.to.row = addtorow,
+                     include.rownames = FALSE,
+                     include.colnames = FALSE,
+                     hline.after = c(1))
+cat(tabout_both, file = paste(control$dropbox_table_dir, "/both_ebi_comp_tab.txt", sep = ""))
+if (!control$output_to_dropbox) {
+  cat(tabout_both, file = paste(control$table_dir, "/Table_1.txt", sep = ""))
+}
+
+
 tab.uv.eb.comp <- table(resimp$uv.perm.signsig, resimp[, mv_signsig_name])
 
 resimp.disagree <- resimp[which(resimp[, mv_signsig_name] != 0 & 

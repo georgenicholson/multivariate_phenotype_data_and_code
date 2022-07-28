@@ -1,5 +1,5 @@
 ################################################
-# This script generates Figures S8, 8
+# This script generates Figures S8, 10
 ################################################
 
 resl.comp.fac <- readRDS(file = control$file_raw_factor_results)
@@ -310,7 +310,7 @@ if(jpegc){
               to = paste(control$dropbox_figure_dir, "/", fnamc, sep = ""), overwrite = TRUE)
   } else {
     file.rename(from = paste(control$figure_dir, "/", fnamc, sep = ""), 
-                to = file.path(control$figure_dir, "Figure_8.jpg"))
+                to = file.path(control$figure_dir, "Figure_10.jpg"))
   }
 }
 

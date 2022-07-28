@@ -36,10 +36,10 @@ source("scripts/05b_power_comparisons.R")
 # This script generates Figures 6, S5, S6
 source("scripts/05c_reference_lines.R")
 try ({
-  # This script generates Figures 7, S7
+  # This script generates Figures 8, S7
   source("scripts/05d_gene_ontology.R")
 })
-# This script generates Figures S8, 8
+# This script generates Figures S8, 10
 source("scripts/05e_factor_model.R")
 # Please note: 05f_benchmarking.R will crash if you have 
 # generated a set of incomplete benchmarking results 
