@@ -1,5 +1,5 @@
 
-# Multivariate phenotype analysis enable genome-wide inference of mammalian gene function
+# Multivariate phenotype analysis enables genome-wide inference of mammalian gene function
 
 
 
